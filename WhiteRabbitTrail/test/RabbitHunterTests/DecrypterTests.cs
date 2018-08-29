@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using RabbitHunter;
 using Xunit;
 
 namespace RabbitHunterTests
@@ -10,9 +6,11 @@ namespace RabbitHunterTests
 
     public class DecrypterTests
     {
+        private Decrypter _sut;
+
         public DecrypterTests()
         {
-            
+            _sut = new Decrypter();
         }
 
 
@@ -21,7 +19,9 @@ namespace RabbitHunterTests
         [InlineData("23170acc097c24edb98fc5488ab033fe", "ty outlaws printouts")]
         public void Decrypt_ReturnsCorrectAnagrams(string hash, string expectedAnagram)
         {
+            var actualAnagram = _sut.DecryptAnagram(hash);
 
+            Assert.Equal(expectedAnagram, actualAnagram);
         }
     }
 }
