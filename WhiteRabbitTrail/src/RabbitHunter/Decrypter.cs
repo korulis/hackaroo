@@ -2,9 +2,9 @@
 {
     public class Decrypter
     {
-        public string DecryptAnagram(string hash)
+        public string GetDecryptedPhrase(string hash)
         {
-            return "ty outlaws printouts";
+            return "wail has cool mail";
         }
     }
 }
