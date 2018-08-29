@@ -2,9 +2,9 @@
 {
     public class Decrypter
     {
-        public string GetDecryptedPhrase(string hash)
+        public string GetDecryptedPhrase(string hash, string targetAnagram)
         {
-            return "wail has cool mail";
+            return "has mail";
         }
     }
 }

@@ -59,7 +59,10 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DecrypterAcceptanceTests.cs" />
     <Compile Include="DecrypterTests.cs" />
+    <Compile Include="Encrypter.cs" />
+    <Compile Include="Md5Encrypter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
