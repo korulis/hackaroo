@@ -6,12 +6,22 @@ namespace RabbitHunterTests
 {
     public class DecrypterAcceptanceTests
     {
+        private class DummyEncrypter : Encrypter
+        {
+            public string Hash(string phrase)
+            {
+                throw new System.NotImplementedException();
+            }
+        }
+
         private readonly Decrypter _sut;
         private const string Anagram = "poultry outwits ants";
 
         public DecrypterAcceptanceTests()
         {
-            _sut = new Decrypter(new List<string> {"fix later"});
+            // todo replate with real implementation later.
+            var ecrypter = new DummyEncrypter();
+            _sut = new Decrypter(new List<string> {"fix later"}, ecrypter);
         }
 
         [Theory]

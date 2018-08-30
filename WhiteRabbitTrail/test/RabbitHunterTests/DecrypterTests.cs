@@ -23,7 +23,8 @@ namespace RabbitHunterTests
 
         public DecrypterTests()
         {
-            _sut = new Decrypter(_alphabeticWordPool);
+            var encrypter = new Md5Encrypter();
+            _sut = new Decrypter(_alphabeticWordPool, encrypter);
         }
 
         [Theory]

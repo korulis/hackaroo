@@ -2,16 +2,19 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using RabbitHunterTests;
 
 namespace RabbitHunter
 {
     public class Decrypter
     {
         private readonly IEnumerable<string> _words;
+        private readonly Encrypter _encrypter;
 
-        public Decrypter(IEnumerable<string> words)
+        public Decrypter(IEnumerable<string> words, Encrypter encrypter)
         {
             _words = words;
+            _encrypter = encrypter;
         }
 
         public string GetDecryptedPhrase(string hash, string targetAnagram)
@@ -24,7 +27,11 @@ namespace RabbitHunter
 
                 if (sortedWord == sortedAnagram)
                 {
-                    return word;
+                    var answer = word;
+                    if (_encrypter.Hash(answer) == hash)
+                    {
+                        return answer;
+                    }
                 }
             }
 
