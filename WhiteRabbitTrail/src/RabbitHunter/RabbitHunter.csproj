@@ -42,6 +42,7 @@
   <ItemGroup>
     <Compile Include="Decrypter.cs" />
     <Compile Include="Encrypter.cs" />
+    <Compile Include="NoPhraseFound.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -19,13 +19,21 @@ namespace RabbitHunter
 
         public string GetDecryptedPhrase(string hash, string targetAnagram)
         {
-            var sortedAnagram = Alphabetize(targetAnagram);
+            var words1 = _words.Clone().ToList();
 
-            foreach (var word in _words)
+            var sortedCharPool = Alphabetize(targetAnagram); //type1
+
+
+
+            foreach (var word in words1)
             {
                 var sortedWord = Alphabetize(word);
 
-                if (sortedWord == sortedAnagram)
+                var remainderCharPool = sortedCharPool.Subtract(sortedWord);
+
+                if(remainderCharPool == null) continue;
+
+                if (remainderCharPool == string.Empty)
                 {
                     var answer = word;
                     if (_encrypter.Hash(answer) == hash)
@@ -35,14 +43,45 @@ namespace RabbitHunter
                 }
             }
 
-            throw new Exception("no phrase found");
+            throw new NoPhraseFound("no phrase found");
         }
 
-        private static string Alphabetize(string targetAnagram)
+        public static string Alphabetize(string targetAnagram)
         {
             var alphabetizedAnagram = targetAnagram.ToCharArray().ToList();
             alphabetizedAnagram.Sort();
-            return new string(alphabetizedAnagram.ToArray());
+            return new string(alphabetizedAnagram.Except(new List<char> {' '}).ToArray());
         }
     }
+
+
+    public static class SortedStringExtensions
+    {
+        public static string Subtract(this string inital, string input)
+        {
+            var initialAsList = inital.ToArray().ToList();
+            var inputArray = input.ToArray();
+            if (input.Length > inital.Length) return null;
+
+            foreach (var inChar in inputArray)
+            {
+                var success = initialAsList.Remove(inChar);
+                if (!success)
+                {
+                    return null;
+                }
+            }
+
+            return new string(initialAsList.ToArray());
+        }
+    }
+
+    public static class Extensions
+    {
+        public static IEnumerable<T> Clone<T>(this IEnumerable<T> listToClone) where T : ICloneable
+        {
+            return listToClone.Select(item => (T)item.Clone());
+        }
+    }
+
 }
