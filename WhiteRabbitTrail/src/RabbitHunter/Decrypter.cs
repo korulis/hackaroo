@@ -31,7 +31,7 @@ namespace RabbitHunter
 
                 var remainderCharPool = sortedCharPool.Subtract(sortedWord);
 
-                if(remainderCharPool == null) continue;
+                if (remainderCharPool == null) continue;
 
                 if (remainderCharPool == string.Empty)
                 {
@@ -41,6 +41,24 @@ namespace RabbitHunter
                         return answer;
                     }
                 }
+
+                foreach (var word2 in words1)
+                {
+                    var sortedWord2 = Alphabetize(word2);
+
+                    var remainderCharPool2 = remainderCharPool.Subtract(sortedWord2);
+
+                    if (remainderCharPool2 == null) continue;
+
+                    if (remainderCharPool2 == string.Empty)
+                    {
+                        var answer = word + " " + word2;
+                        if (_encrypter.Hash(answer) == hash)
+                        {
+                            return answer;
+                        }
+                    }
+                }
             }
 
             throw new NoPhraseFound("no phrase found");
@@ -48,9 +66,11 @@ namespace RabbitHunter
 
         public static string Alphabetize(string targetAnagram)
         {
-            var alphabetizedAnagram = targetAnagram.ToCharArray().ToList();
+            var noBlanks = targetAnagram.Replace(" ", "");
+            var alphabetizedAnagram = noBlanks.ToCharArray().ToList();
             alphabetizedAnagram.Sort();
-            return new string(alphabetizedAnagram.Except(new List<char> {' '}).ToArray());
+            var array = alphabetizedAnagram.ToArray();
+            return new string(array);
         }
     }
 

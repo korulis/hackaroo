@@ -64,7 +64,7 @@
     <Compile Include="DecrypterTests.cs" />
     <Compile Include="Md5Encrypter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="StringSubtractionTests.cs" />
+    <Compile Include="HelperTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
