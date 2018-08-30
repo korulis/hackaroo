@@ -41,8 +41,8 @@ namespace RabbitHunterTests
 
         [Theory]
         [InlineData("has mail", "4baa9bd4e256f2040183789f31f486a1", "has mail")]
-        //[InlineData("hail was", "4baa9bd4e256f2040183789f31f486a1", "has mail")]
-        //[InlineData("hail mass", "b3df493553df242256dac2d37511ec64", "has mails")]
+        [InlineData("hail was", "4baa9bd4e256f2040183789f31f486a1", "has mail")]
+        [InlineData("hail mass", "b3df493553df242256dac2d37511ec64", "has mails")]
         public void Decrypt_ReturnsCorrectPhrases_TwoWords(string anagram, string hash, string expectedPhrase)
         {
             var actualPhrase = _sut.GetDecryptedPhrase(hash, anagram);
