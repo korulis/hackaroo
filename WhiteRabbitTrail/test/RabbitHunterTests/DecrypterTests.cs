@@ -38,6 +38,7 @@ namespace RabbitHunterTests
         }
 
         [Theory]
+        [InlineData("has mail", "4baa9bd4e256f2040183789f31f486a1", "has mail")]
         [InlineData("hail was", "4baa9bd4e256f2040183789f31f486a1", "has mail")]
         [InlineData("hail mass", "b3df493553df242256dac2d37511ec64", "has mails")]
         public void Decrypt_ReturnsCorrectPhrases_TwoWords(string anagram, string hash, string expectedPhrase)
@@ -48,6 +49,7 @@ namespace RabbitHunterTests
         }
 
         [Theory]
+        [InlineData("wail has cool mail", "cc7855c00fed581afd264fe2458884d1", "wail has cool mail")]
         [InlineData("hail was cool mail", "cc7855c00fed581afd264fe2458884d1", "wail has cool mail")]
         [InlineData("hail was cool mail", "fc99cc261fa078ac422a8214e0242ae5", "mail was cool hail")]
         public void Decrypt_ReturnsCorrectPhrases_ThreeWords(string anagram, string hash, string expectedPhrase)
