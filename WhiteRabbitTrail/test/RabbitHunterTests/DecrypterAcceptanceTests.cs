@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using RabbitHunter;
 using Xunit;
 
@@ -10,7 +11,7 @@ namespace RabbitHunterTests
 
         public DecrypterAcceptanceTests()
         {
-            _sut = new Decrypter();
+            _sut = new Decrypter(new List<string> {"fix later"});
         }
 
         [Theory]

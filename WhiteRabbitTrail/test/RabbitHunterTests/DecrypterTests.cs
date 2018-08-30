@@ -23,10 +23,11 @@ namespace RabbitHunterTests
 
         public DecrypterTests()
         {
-            _sut = new Decrypter();
+            _sut = new Decrypter(_alphabeticWordPool);
         }
 
         [Theory]
+        [InlineData("mail", "b83a886a5c437ccd9ac15473fd6f1788", "mail")]
         [InlineData("mail", "6742923575546471370cc028f289db40", "lima")]
         [InlineData("mail", "6d8c4d103f90154cc06dd75a71d061be", "liam")]
         public void Decrypt_ReturnsCorrectPhrases_SingleWord(string anagram, string hash, string expectedPhrase)
