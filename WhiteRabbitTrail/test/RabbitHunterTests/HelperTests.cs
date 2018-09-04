@@ -9,12 +9,19 @@ namespace RabbitHunterTests
         [Theory]
         [InlineData("a", "a", "")]
         [InlineData("aa", "aa", "")]
+        [InlineData("aa", "", "aa")]
         [InlineData("aa", "ab", null)]
         [InlineData("ab", "aa", null)]
         [InlineData("aa", "a", "a")]
+        [InlineData("dcba", "bc", "ad")] // subtract from unsorted
+        [InlineData("abcd", "cb", "ad")] // subtract unsorted
+        [InlineData("dcba", "cb", "ad")] // subtract unsorted from unsorted
+        [InlineData("dcba ", "cb", "ad")] // can subtract from sentence
+        [InlineData("dcba", "c b", null)] // can not subtract sentence
+        [InlineData("d cba", "c b", null)]
         public void Subtract(string initial, string input, string expected)
         {
-            var actual = initial.Subtract(input);
+            var actual = initial.SubtractWord(input);
 
             Assert.Equal(expected, actual);
         }
@@ -27,7 +34,7 @@ namespace RabbitHunterTests
         [InlineData("ab a","aab")]
         public void Alphabetize(string input, string expected)
         {
-            var actual = Decrypter.Alphabetize(input);
+            var actual = SortedStringExtensions.Alphabetize(input);
 
             Assert.Equal(expected, actual);
         }
