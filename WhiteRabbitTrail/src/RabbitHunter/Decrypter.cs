@@ -44,11 +44,11 @@ namespace RabbitHunter
         {
             var charPool = targetAnagram.Alphabetize();
             var targetAnagramRelevantWords = RemoveIrrelevantWords(_words, charPool);
-            var awareWords = AlphabeticListAwareWords.GetAlphabeticListAwareWords(targetAnagramRelevantWords);
+            var charPools = CharPoolWithWords.GetCharPools(targetAnagramRelevantWords);
 
             var candidateAnswer = new Answer(); //answerType
 
-            candidateAnswer = Recursive(hash, candidateAnswer, charPool, awareWords);
+            candidateAnswer = Recursive(hash, candidateAnswer, charPool, charPools);
 
             if (candidateAnswer.IsCorrect)
             {
@@ -58,12 +58,11 @@ namespace RabbitHunter
             throw new NoPhraseFound("no phrase found");
         }
 
-        private Answer Recursive(string hash, Answer candidateAnswer, string charPool, IList<AlphabeticListAwareWords> relevantWords)
+        private Answer Recursive(string hash, Answer candidateAnswer, string charPool, IList<CharPoolWithWords> charPools)
         {
             var partialPhrase = candidateAnswer.Value;
-            for (int i = 0; i < relevantWords.Count; i++)
+            foreach (var word in charPools)
             {
-                var word = relevantWords[i];
                 if (candidateAnswer.IsCorrect) break;
                 candidateAnswer = new Answer(partialPhrase, word.Value);
 
@@ -71,7 +70,6 @@ namespace RabbitHunter
 
                 if (remainderCharPool == null)
                 {
-                    i = i + word.WordsAhead;
                     continue;
                 }
 
@@ -84,7 +82,7 @@ namespace RabbitHunter
                     continue;
                 }
 
-                candidateAnswer = Recursive(hash, candidateAnswer, charPool, relevantWords);
+                candidateAnswer = Recursive(hash, candidateAnswer, charPool, charPools);
             }
             return candidateAnswer;
         }

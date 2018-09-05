@@ -62,6 +62,7 @@
   <ItemGroup>
     <Compile Include="AlphabeticWordListAwareWordTests.cs" />
     <Compile Include="BenchmarkTests.cs" />
+    <Compile Include="CharPoolWithWordsTests.cs" />
     <Compile Include="DecrypterAcceptanceTests.cs" />
     <Compile Include="DecrypterTests.cs" />
     <Compile Include="Md5Encrypter.cs" />
