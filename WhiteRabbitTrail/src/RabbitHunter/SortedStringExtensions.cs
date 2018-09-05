@@ -13,7 +13,7 @@ namespace RabbitHunter
             return new string(array);
         }
 
-        public static string SubtractWord(this string inital, string input)
+        public static string SubtractChars(this string inital, string input)
         {
             var initialAsList = inital.ToArray().ToList();
             var inputArray = input.ToArray();

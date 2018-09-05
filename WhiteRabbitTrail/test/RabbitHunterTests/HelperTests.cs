@@ -21,7 +21,7 @@ namespace RabbitHunterTests
         [InlineData("d cba", "c b", null)]
         public void Subtract(string initial, string input, string expected)
         {
-            var actual = initial.SubtractWord(input);
+            var actual = initial.SubtractChars(input);
 
             Assert.Equal(expected, actual);
         }

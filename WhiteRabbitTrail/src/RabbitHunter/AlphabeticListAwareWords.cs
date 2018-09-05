@@ -25,7 +25,7 @@ namespace RabbitHunter
                 for (var innerI = index + 1; innerI < words.Count; innerI++)
                 {
                     var wordAhead = words[innerI];
-                    if (wordAhead.SubtractWord(word) != null)
+                    if (wordAhead.SubtractChars(word) != null)
                     {
                         wordsAhead++;
                     }
