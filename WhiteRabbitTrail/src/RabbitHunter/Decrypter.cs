@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using RabbitHunterTests;
 
 namespace RabbitHunter
@@ -20,14 +21,21 @@ namespace RabbitHunter
 
             public string Value { get; set; }
 
-            public Answer() : this(string.Empty)
+            public Answer() : this(partialPhrase: string.Empty, word: string.Empty)
             {
                 IsCorrect = false;
             }
 
-            public Answer(string value)
+            public Answer(string partialPhrase, string word)
             {
-                Value = value;
+                if (string.IsNullOrEmpty(partialPhrase))
+                {
+                    Value = word;
+                }
+                else
+                {
+                    Value = partialPhrase + " " + word;
+                }
             }
         }
 
@@ -35,82 +43,12 @@ namespace RabbitHunter
         public string GetDecryptedPhrase(string hash, string targetAnagram)
         {
             var charPool = targetAnagram.Alphabetize();
+            var targetAnagramRelevantWords = RemoveIrrelevantWords(_words, charPool);
+            var awareWords = AlphabeticListAwareWords.GetAlphabeticListAwareWords(targetAnagramRelevantWords);
+
             var candidateAnswer = new Answer(); //answerType
 
-            foreach (var word in _words)
-            {
-                if (candidateAnswer.IsCorrect) break;
-                candidateAnswer = new Answer(word);
-
-                var remainderCharPool = charPool.SubtractWord(candidateAnswer.Value.Alphabetize());
-
-                if (remainderCharPool == null) continue;
-
-                if (remainderCharPool == string.Empty)
-                {
-                    if (_encrypter.Hash(candidateAnswer.Value) == hash)
-                    {
-                        candidateAnswer.IsCorrect = true;
-
-                    }
-                    continue;
-                }
-
-                foreach (var word2 in _words)
-                {
-                    if (candidateAnswer.IsCorrect) break;
-                    candidateAnswer = new Answer(word + " " + word2);
-                    var remainderCharPool2 = charPool.SubtractWord(candidateAnswer.Value.Alphabetize());
-
-                    if (remainderCharPool2 == null) continue;
-
-                    if (remainderCharPool2 == string.Empty)
-                    {
-                        if (_encrypter.Hash(candidateAnswer.Value) == hash)
-                        {
-                            candidateAnswer.IsCorrect = true;
-                        }
-                        continue;
-                    }
-
-                    foreach (var word3 in _words)
-                    {
-                        if (candidateAnswer.IsCorrect) break;
-                        candidateAnswer = new Answer(word + " " + word2 + " " + word3);
-                        var remainderCharPool3 = charPool.SubtractWord(candidateAnswer.Value.Alphabetize());
-
-                        if (remainderCharPool3 == null) continue;
-
-                        if (remainderCharPool3 == string.Empty)
-                        {
-                            if (_encrypter.Hash(candidateAnswer.Value) == hash)
-                            {
-                                candidateAnswer.IsCorrect = true;
-                            }
-                            continue;
-                        }
-
-                        foreach (var word4 in _words)
-                        {
-                            if (candidateAnswer.IsCorrect) break;
-                            candidateAnswer = new Answer(word + " " + word2 + " " + word3 + " " + word4);
-                            var remainderCharPool4 = charPool.SubtractWord(candidateAnswer.Value.Alphabetize());
-
-                            if (remainderCharPool4 == null) continue;
-
-                            if (remainderCharPool4 == string.Empty)
-                            {
-                                if (_encrypter.Hash(candidateAnswer.Value) == hash)
-                                {
-                                    candidateAnswer.IsCorrect = true;
-                                }
-                                continue;
-                            }
-                        }
-                    }
-
-                }
-            }
+            candidateAnswer = Recursive(hash, candidateAnswer, charPool, awareWords);
 
             if (candidateAnswer.IsCorrect)
             {
@@ -119,5 +57,42 @@ namespace RabbitHunter
 
             throw new NoPhraseFound("no phrase found");
         }
+
+        private Answer Recursive(string hash, Answer candidateAnswer, string charPool, IList<AlphabeticListAwareWords> relevantWords)
+        {
+            var partialPhrase = candidateAnswer.Value;
+            for (int i = 0; i < relevantWords.Count; i++)
+            {
+                var word = relevantWords[i];
+                if (candidateAnswer.IsCorrect) break;
+                candidateAnswer = new Answer(partialPhrase, word.Value);
+
+                var remainderCharPool = charPool.SubtractWord(candidateAnswer.Value.Alphabetize());
+
+                if (remainderCharPool == null)
+                {
+                    i = i + word.WordsAhead;
+                    continue;
+                }
+
+                if (remainderCharPool == string.Empty)
+                {
+                    if (_encrypter.Hash(candidateAnswer.Value) == hash)
+                    {
+                        candidateAnswer.IsCorrect = true;
+                    }
+                    continue;
+                }
+
+                candidateAnswer = Recursive(hash, candidateAnswer, charPool, relevantWords);
+            }
+            return candidateAnswer;
+        }
+
+        private List<string> RemoveIrrelevantWords(IEnumerable<string> words, string anagram)
+        {
+            return words.Where(x => anagram.SubtractWord(x) != null).ToList();
+        }
+
     }
 }

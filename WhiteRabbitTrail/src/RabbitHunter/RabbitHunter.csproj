@@ -40,6 +40,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AlphabeticListAwareWords.cs" />
     <Compile Include="Decrypter.cs" />
     <Compile Include="Encrypter.cs" />
     <Compile Include="Extensions.cs" />
