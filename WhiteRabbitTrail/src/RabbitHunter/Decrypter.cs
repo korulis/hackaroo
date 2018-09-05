@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using RabbitHunterTests;
 
@@ -17,13 +18,13 @@ namespace RabbitHunter
 
         public class Answer
         {
-            public bool IsCorrect { get; set; }
+            public bool IsCorrectLength { get; set; }
 
             public string Value { get; set; }
 
             public Answer() : this(partialPhrase: string.Empty, word: string.Empty)
             {
-                IsCorrect = false;
+                IsCorrectLength = false;
             }
 
             public Answer(string partialPhrase, string word)
@@ -39,34 +40,94 @@ namespace RabbitHunter
             }
         }
 
+        public class PartialCharPool
+        {
+
+            public List<CharPoolWithWords> CharPoolsWithWords { get; }
+            public string CharPool { get; }
+            public bool IsCharPoolEquivalentToAnagram { get; set; }
+
+            public PartialCharPool(List<CharPoolWithWords> charPoolsWithWords)
+            {
+                IsCharPoolEquivalentToAnagram = false;
+                CharPoolsWithWords = charPoolsWithWords;
+                CharPool = string.Concat(charPoolsWithWords);
+            }
+
+            public PartialCharPool(PartialCharPool partialCharPool, CharPoolWithWords charPoolWithWords)
+            {
+                IsCharPoolEquivalentToAnagram = false;
+
+                CharPoolsWithWords = new List<CharPoolWithWords>();
+                CharPoolsWithWords.AddRange(partialCharPool.CharPoolsWithWords);
+                CharPoolsWithWords.Add(charPoolWithWords);
+
+                CharPool = string.Concat(partialCharPool.CharPool, charPoolWithWords.Value);
+
+            }
+        }
 
         public string GetDecryptedPhrase(string hash, string targetAnagram)
         {
-            var charPool = targetAnagram.Alphabetize();
-            var targetAnagramRelevantWords = RemoveIrrelevantWords(_words, charPool);
+            var anagramCharPool = targetAnagram.Alphabetize();
+            var targetAnagramRelevantWords = RemoveIrrelevantWords(_words, anagramCharPool);
             var charPools = CharPoolWithWords.GetCharPools(targetAnagramRelevantWords);
 
-            var candidateAnswer = new Answer(); //answerType
+            var candidateAnswer = new PartialCharPool(new List<CharPoolWithWords>()); //answerType
 
-            candidateAnswer = Recursive(hash, candidateAnswer, charPool, charPools);
+            var candidateBundles = Recursive(candidateAnswer, anagramCharPool, charPools);
 
-            if (candidateAnswer.IsCorrect)
+
+            foreach (var bundle in candidateBundles)
             {
-                return candidateAnswer.Value;
+                if (bundle.IsCharPoolEquivalentToAnagram) // todo can be removed
+                {
+                    // construct equivalent phrases
+                    var constructionList = new List<string> { "" };
+                    foreach (var charPoolWithWords in bundle.CharPoolsWithWords)
+                    {
+                        var list2 = new List<string>();
+
+                        foreach (var word in charPoolWithWords.Words)
+                        {
+                            foreach (var phraseUnderConstruction in constructionList)
+                            {
+                                if (phraseUnderConstruction == "")
+                                {
+                                    list2.Add(word);
+                                }
+                                list2.Add(phraseUnderConstruction + " " + word);
+                            }
+                        }
+
+                        constructionList = list2;
+                    }
+
+                    foreach (var phrase in constructionList)
+                    {
+                        if (_encrypter.Hash(phrase) == hash)
+                        {
+                            return phrase;
+                        }
+
+                    }
+                }
             }
 
             throw new NoPhraseFound("no phrase found");
         }
 
-        private Answer Recursive(string hash, Answer candidateAnswer, string charPool, IList<CharPoolWithWords> charPools)
+        // todo maybe can return Ienumerable<Answer> instead
+        private List<PartialCharPool> Recursive(PartialCharPool partialCharPool, string anagramCharPool, IList<CharPoolWithWords> charPoolsWithWords)
         {
-            var partialPhrase = candidateAnswer.Value;
-            foreach (var word in charPools)
-            {
-                if (candidateAnswer.IsCorrect) break;
-                candidateAnswer = new Answer(partialPhrase, word.Value);
+            if (partialCharPool.IsCharPoolEquivalentToAnagram) return new List<PartialCharPool> { partialCharPool }; //todo this could be removed
 
-                var remainderCharPool = charPool.SubtractWord(candidateAnswer.Value.Alphabetize());
+            var newCandidates = new List<PartialCharPool>();
+            foreach (var newCharPoolWithWords in charPoolsWithWords)
+            {
+                var newPartialPhrase = new PartialCharPool(partialCharPool, newCharPoolWithWords);
+
+                var remainderCharPool = anagramCharPool.SubtractWord(newPartialPhrase.CharPool.Alphabetize());
 
                 if (remainderCharPool == null)
                 {
@@ -75,16 +136,12 @@ namespace RabbitHunter
 
                 if (remainderCharPool == string.Empty)
                 {
-                    if (_encrypter.Hash(candidateAnswer.Value) == hash)
-                    {
-                        candidateAnswer.IsCorrect = true;
-                    }
-                    continue;
+                    newPartialPhrase.IsCharPoolEquivalentToAnagram = true;
                 }
 
-                candidateAnswer = Recursive(hash, candidateAnswer, charPool, charPools);
+                newCandidates.AddRange(Recursive(newPartialPhrase, anagramCharPool, charPoolsWithWords));
             }
-            return candidateAnswer;
+            return newCandidates;
         }
 
         private List<string> RemoveIrrelevantWords(IEnumerable<string> words, string anagram)
