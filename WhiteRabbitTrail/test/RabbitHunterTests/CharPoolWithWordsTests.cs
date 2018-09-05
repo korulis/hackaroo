@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using Cp = RabbitHunter.CharPoolWithWords;
 using Xunit;
 
@@ -10,7 +11,7 @@ namespace RabbitHunterTests
         [MemberData(nameof(Data))]
         public void Tests(List<string> wordList, List<Cp> expected)
         {
-            var actual = Cp.GetCharPools(wordList);
+            var actual = Cp.GetDictionary(wordList).Select(x => new Cp(x.Key, x.Value)).ToList();
 
             Assert.Equal(expected.Count, actual.Count);
             for (int i = 0; i < actual.Count; i++)

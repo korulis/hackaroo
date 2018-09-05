@@ -15,13 +15,14 @@ namespace RabbitHunter
             Words = words;
         }
 
-        public static IList<CharPoolWithWords> GetCharPools(List<string> words)
+        public static IDictionary<string,List<string>> GetDictionary(List<string> words)
         {
             var result = words
                 .GroupBy(x => x.Alphabetize(), x => x)
                 .ToDictionary(x => x.Key, x => x.ToList())
-                .Select(x => new CharPoolWithWords(x.Key, x.Value))
-                .ToList();
+                //.Select(x => new CharPoolWithWords(x.Key, x.Value))
+                //.ToList()
+                ;
 
             return result;
         }

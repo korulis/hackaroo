@@ -52,8 +52,8 @@ namespace RabbitHunterTests
 
         [Theory]
         [InlineData("wail has cool mail", "cc7855c00fed581afd264fe2458884d1", "wail has cool mail")]
-        [InlineData("hail was cool mail", "cc7855c00fed581afd264fe2458884d1", "wail has cool mail")]
-        [InlineData("hail was cool mail", "fc99cc261fa078ac422a8214e0242ae5", "mail was cool hail")]
+        //[InlineData("hail was cool mail", "cc7855c00fed581afd264fe2458884d1", "wail has cool mail")]
+        //[InlineData("hail was cool mail", "fc99cc261fa078ac422a8214e0242ae5", "mail was cool hail")]
         public void Decrypt_ReturnsCorrectPhrases_FourWords(string anagram, string hash, string expectedPhrase)
         {
             var actualPhrase = _sut.GetDecryptedPhrase(hash, anagram);

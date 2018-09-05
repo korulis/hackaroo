@@ -51,7 +51,7 @@ namespace RabbitHunter
             {
                 IsCharPoolEquivalentToAnagram = false;
                 CharPoolsWithWords = charPoolsWithWords;
-                CharPool = string.Concat(charPoolsWithWords);
+                CharPool = string.Concat(charPoolsWithWords).Alphabetize();
             }
 
             public PartialCharPool(PartialCharPool partialCharPool, CharPoolWithWords charPoolWithWords)
@@ -62,7 +62,7 @@ namespace RabbitHunter
                 CharPoolsWithWords.AddRange(partialCharPool.CharPoolsWithWords);
                 CharPoolsWithWords.Add(charPoolWithWords);
 
-                CharPool = string.Concat(partialCharPool.CharPool, charPoolWithWords.Value);
+                CharPool = string.Concat(partialCharPool.CharPool, charPoolWithWords.Value).Alphabetize();
 
             }
         }
@@ -71,11 +71,13 @@ namespace RabbitHunter
         {
             var anagramCharPool = targetAnagram.Alphabetize();
             var targetAnagramRelevantWords = RemoveIrrelevantWords(_words, anagramCharPool);
-            var charPools = CharPoolWithWords.GetCharPools(targetAnagramRelevantWords);
+            var charPoolsToStringLists = CharPoolWithWords.GetDictionary(targetAnagramRelevantWords);
 
             var candidateAnswer = new PartialCharPool(new List<CharPoolWithWords>()); //answerType
 
-            var candidateBundles = Recursive(candidateAnswer, anagramCharPool, charPools);
+            var deadEnds = new Dictionary<string,bool>();
+
+            var candidateBundles = Recursive(candidateAnswer, anagramCharPool, charPoolsToStringLists, deadEnds);
 
 
             foreach (var bundle in candidateBundles)
@@ -116,29 +118,58 @@ namespace RabbitHunter
         }
 
         // todo maybe can return Ienumerable<Answer> instead
-        private List<PartialCharPool> Recursive(PartialCharPool partialCharPool, string anagramCharPool, IList<CharPoolWithWords> charPoolsWithWords)
+        private List<PartialCharPool> Recursive(
+            PartialCharPool partialCharPool,
+            string anagramCharPool,
+            IDictionary<string, List<string>> charPoolsToWordLists,
+            IDictionary<string,bool> deadEnds)
         {
             if (partialCharPool.IsCharPoolEquivalentToAnagram) return new List<PartialCharPool> { partialCharPool };
 
             var newCandidates = new List<PartialCharPool>();
-            foreach (var charPoolWithWords in charPoolsWithWords)
+            bool partialCharPoolIsDeadEnd = true;
+
+            foreach (var tuple in charPoolsToWordLists)
             {
-                var newPartialPhraseCharPool = new PartialCharPool(partialCharPool, charPoolWithWords);
+                var newPartialPhraseCharPool = new PartialCharPool(partialCharPool, new CharPoolWithWords(tuple.Key, tuple.Value));
+
+                if (deadEnds.ContainsKey(newPartialPhraseCharPool.CharPool) )
+                {
+                    continue;
+                }
 
                 var remainder = anagramCharPool.SubtractChars(newPartialPhraseCharPool.CharPool.Alphabetize());
 
                 if (remainder == null)
                 {
+
                     continue;
                 }
+
 
                 if (remainder == string.Empty)
                 {
                     newPartialPhraseCharPool.IsCharPoolEquivalentToAnagram = true;
                 }
 
-                newCandidates.AddRange(Recursive(newPartialPhraseCharPool, anagramCharPool, charPoolsWithWords));
+                var candidates = Recursive(newPartialPhraseCharPool, anagramCharPool, charPoolsToWordLists, deadEnds);
+
+                if (candidates.Count == 0)
+                {
+                    partialCharPoolIsDeadEnd = true;
+                }
+                else
+                {
+                    newCandidates.AddRange(candidates);
+                    partialCharPoolIsDeadEnd = false;
+                }
             }
+
+            if (partialCharPoolIsDeadEnd)
+            {
+                deadEnds.Add(partialCharPool.CharPool, true);
+            }
+
             return newCandidates;
         }
 
