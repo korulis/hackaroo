@@ -24,7 +24,7 @@ namespace RabbitHunter
 
             var candidateAnswer = new PartialCharPool(new List<CharPoolWithWords>()); //answerType
 
-            var deadEnds = new Dictionary<string,bool>();
+            var deadEnds = new Dictionary<string, bool>();
 
             var candidateBundles = Recursive(candidateAnswer, anagramCharPool, charPoolsToStringLists, deadEnds);
 
@@ -71,7 +71,7 @@ namespace RabbitHunter
             PartialCharPool partialCharPool,
             string anagramCharPool,
             IDictionary<string, List<string>> charPoolsToWordLists,
-            IDictionary<string,bool> deadEnds)
+            IDictionary<string, bool> deadEnds)
         {
             var newCandidates = new List<PartialCharPool>();
             bool partialCharPoolIsDeadEnd = true;
@@ -80,7 +80,7 @@ namespace RabbitHunter
             {
                 var newPartialPhraseCharPool = new PartialCharPool(partialCharPool, new CharPoolWithWords(tuple.Key, tuple.Value));
 
-                if (deadEnds.ContainsKey(newPartialPhraseCharPool.Value) )
+                if (deadEnds.ContainsKey(newPartialPhraseCharPool.Value))
                 {
                     continue;
                 }
@@ -96,16 +96,9 @@ namespace RabbitHunter
                 // a fit
                 if (remainder.Length == 0)
                 {
-                    var candidates = new List<PartialCharPool>() {newPartialPhraseCharPool};
-                    if (candidates.Count == 0)
-                    {
-                        partialCharPoolIsDeadEnd = true;
-                    }
-                    else
-                    {
-                        newCandidates.AddRange(candidates);
-                        partialCharPoolIsDeadEnd = false;
-                    }
+                    var candidates = new List<PartialCharPool>() { newPartialPhraseCharPool };
+                    newCandidates.AddRange(candidates);
+                    partialCharPoolIsDeadEnd = false;
                     continue;
                 }
 
@@ -116,17 +109,15 @@ namespace RabbitHunter
                     var candidates = Recursive(newPartialPhraseCharPool, anagramCharPool, charPoolsToWordLists, deadEnds);
                     if (candidates.Count == 0)
                     {
-                        partialCharPoolIsDeadEnd = true;
+                        partialCharPoolIsDeadEnd = partialCharPoolIsDeadEnd && true;
                     }
                     else
                     {
                         newCandidates.AddRange(candidates);
-                        partialCharPoolIsDeadEnd = false;
+                        partialCharPoolIsDeadEnd = partialCharPoolIsDeadEnd && false;
                     }
                     continue;
                 }
-
-
             }
 
             if (partialCharPoolIsDeadEnd)
