@@ -4,16 +4,25 @@ namespace RabbitHunter
 {
     public class Memo
     {
-        private readonly IDictionary<string, bool?> _dict;
+        private readonly IDictionary<string, CompositionAlternatives> _dict;
 
         public Memo()
         {
-            _dict = new Dictionary<string, bool?>();
+            _dict = new Dictionary<string, CompositionAlternatives>();
         }
 
         public void AddSolution(WordEquivalencyClassComposition wordEquivalencyClassComposition)
         {
-            _dict.Add(wordEquivalencyClassComposition.CharPool, true);
+            var charPool = wordEquivalencyClassComposition.CharPool;
+            if (!ContainsKey(charPool))
+            {
+                _dict.Add(charPool, new CompositionAlternatives(wordEquivalencyClassComposition));
+            }
+            else
+            {
+                _dict[charPool].AddAlternative(wordEquivalencyClassComposition);
+            }
+
         }
 
         public void AddDeadEnd(WordEquivalencyClassComposition wordEquivalencyClassComposition)
@@ -21,11 +30,11 @@ namespace RabbitHunter
             _dict.Add(wordEquivalencyClassComposition.CharPool, null);
         }
 
-        public bool Contains(string value)
+        public bool ContainsKey(string value)
         {
             return _dict.ContainsKey(value);
         }
 
-        public bool? this[string value] => _dict[value];
+        public CompositionAlternatives this[string value] => _dict[value];
     }
 }

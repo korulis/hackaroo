@@ -17,7 +17,6 @@ namespace RabbitHunter
 
         public static IDictionary<string,List<string>> GetDictionary(List<string> words)
         {
-            //todo this implementation could be much simplier ?
             var result = words
                 .GroupBy(x => x.Alphabetize(), x => x)
                 .ToDictionary(x => x.Key, x => x.ToList())

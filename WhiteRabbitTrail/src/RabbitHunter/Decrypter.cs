@@ -80,7 +80,7 @@ namespace RabbitHunter
                 var newPartialPhraseComposition = new WordEquivalencyClassComposition(wordEquivalencyClassComposition, new WordEquivalencyClass(equivalencyClass.CharPool, equivalencyClass.Words));
 
                 // check against memo
-                if (memo.Contains(newPartialPhraseComposition.CharPool))
+                if (memo.ContainsKey(newPartialPhraseComposition.CharPool))
                 {
                     //we have been here before...
                     var val = memo[newPartialPhraseComposition.CharPool];
