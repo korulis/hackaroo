@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Cp = RabbitHunter.CharPoolWithWords;
+using RabbitHunter;
 using Xunit;
 
 namespace RabbitHunterTests
@@ -9,14 +9,14 @@ namespace RabbitHunterTests
     {
         [Theory]
         [MemberData(nameof(Data))]
-        public void Tests(List<string> wordList, List<Cp> expected)
+        public void Tests(List<string> wordList, List<WordEquivalencyClass> expected)
         {
-            var actual = Cp.GetDictionary(wordList).Select(x => new Cp(x.Key, x.Value)).ToList();
+            var actual = WordEquivalencyClass.GetDictionary(wordList).Select(x => new WordEquivalencyClass(x.Key, x.Value)).ToList();
 
             Assert.Equal(expected.Count, actual.Count);
             for (int i = 0; i < actual.Count; i++)
             {
-                Assert.Equal(expected[i].Value, actual[i].Value);
+                Assert.Equal(expected[i].CharPool, actual[i].CharPool);
                 Assert.Equal(expected[i].Words.Count, actual[i].Words.Count);
                 var expectedWords = expected[i].Words.ToArray();
                 var actualWords = actual[i].Words.ToArray();
@@ -32,33 +32,33 @@ namespace RabbitHunterTests
             {
                 new object[] {
                     new List<string> {"a"},
-                    new List<Cp> {new Cp("a",new List<string> {"a"})}, },
+                    new List<WordEquivalencyClass> {new WordEquivalencyClass("a",new List<string> {"a"})}, },
 
                 new object[] {
                     new List<string> {"ba"},
-                    new List<Cp> {new Cp("ab",new List<string> {"ba"})}, },
+                    new List<WordEquivalencyClass> {new WordEquivalencyClass("ab",new List<string> {"ba"})}, },
 
                 new object[] {
                     new List<string> {"a", "ba"},
-                    new List<Cp>
+                    new List<WordEquivalencyClass>
                     {
-                        new Cp("a",new List<string> {"a"}),
-                        new Cp("ab",new List<string> {"ba"})
+                        new WordEquivalencyClass("a",new List<string> {"a"}),
+                        new WordEquivalencyClass("ab",new List<string> {"ba"})
                     }, },
 
                 new object[] {
                     new List<string> {"ab", "ba"},
-                    new List<Cp>
+                    new List<WordEquivalencyClass>
                     {
-                        new Cp("ab",new List<string> {"ab","ba"})
+                        new WordEquivalencyClass("ab",new List<string> {"ab","ba"})
                     }, },
 
                 new object[] {
                     new List<string> {"ab", "ba", "bca","cab"},
-                    new List<Cp>
+                    new List<WordEquivalencyClass>
                     {
-                        new Cp("ab",new List<string> {"ab","ba"}),
-                        new Cp("abc",new List<string> {"bca","cab"})
+                        new WordEquivalencyClass("ab",new List<string> {"ab","ba"}),
+                        new WordEquivalencyClass("abc",new List<string> {"bca","cab"})
                     }, },
 
             };

@@ -40,14 +40,15 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AlphabeticListAwareWords.cs" />
-    <Compile Include="CharPoolWithWords.cs" />
+    <Compile Include="AnagramBuilder.cs" />
+    <Compile Include="CompositionAlternatives.cs" />
+    <Compile Include="WordEquivalencyClass.cs" />
     <Compile Include="Decrypter.cs" />
     <Compile Include="Encrypter.cs" />
     <Compile Include="Extensions.cs" />
     <Compile Include="Memo.cs" />
     <Compile Include="NoPhraseFound.cs" />
-    <Compile Include="PartialCharPool.cs" />
+    <Compile Include="WordEquivalencyClassComposition.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SortedStringExtensions.cs" />
   </ItemGroup>

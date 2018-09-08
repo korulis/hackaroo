@@ -3,15 +3,15 @@ using System.Linq;
 
 namespace RabbitHunter
 {
-    public class CharPoolWithWords
+    public class WordEquivalencyClass
     {
-        public string Value { get; }
+        public string CharPool { get; }
 
         public IReadOnlyCollection<string> Words { get; }
 
-        public CharPoolWithWords(string value, List<string> words)
+        public WordEquivalencyClass(string charPool, IReadOnlyCollection<string> words)
         {
-            Value = value;
+            CharPool = charPool;
             Words = words;
         }
 
@@ -21,7 +21,7 @@ namespace RabbitHunter
             var result = words
                 .GroupBy(x => x.Alphabetize(), x => x)
                 .ToDictionary(x => x.Key, x => x.ToList())
-                //.Select(x => new CharPoolWithWords(x.Key, x.Value))
+                //.Select(x => new WordEquivalencyClass(x.Key, x.CharPool))
                 //.ToList()
                 ;
 

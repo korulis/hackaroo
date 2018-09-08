@@ -11,14 +11,14 @@ namespace RabbitHunter
             _dict = new Dictionary<string, bool?>();
         }
 
-        public void AddSolution(PartialCharPool partialCharPool)
+        public void AddSolution(WordEquivalencyClassComposition wordEquivalencyClassComposition)
         {
-            _dict.Add(partialCharPool.Value, true);
+            _dict.Add(wordEquivalencyClassComposition.CharPool, true);
         }
 
-        public void AddDeadEnd(PartialCharPool partialCharPool)
+        public void AddDeadEnd(WordEquivalencyClassComposition wordEquivalencyClassComposition)
         {
-            _dict.Add(partialCharPool.Value, null);
+            _dict.Add(wordEquivalencyClassComposition.CharPool, null);
         }
 
         public bool Contains(string value)

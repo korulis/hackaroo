@@ -60,7 +60,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AlphabeticWordListAwareWordTests.cs" />
     <Compile Include="BenchmarkTests.cs" />
     <Compile Include="CharPoolWithWordsTests.cs" />
     <Compile Include="DecrypterAcceptanceTests.cs" />

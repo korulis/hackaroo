@@ -20,9 +20,9 @@ namespace RabbitHunter
         {
             var anagramCharPool = targetAnagram.Alphabetize();
             var targetAnagramRelevantWords = RemoveIrrelevantWords(_words, anagramCharPool);
-            var charPoolsToStringLists = CharPoolWithWords.GetDictionary(targetAnagramRelevantWords);
+            var charPoolsToStringLists = WordEquivalencyClass.GetDictionary(targetAnagramRelevantWords);
 
-            var candidateAnswer = new PartialCharPool(new List<CharPoolWithWords>()); //answerType
+            var candidateAnswer = new WordEquivalencyClassComposition(new List<WordEquivalencyClass>()); //answerType
 
             var memo = new Memo();
 
@@ -33,7 +33,7 @@ namespace RabbitHunter
             {
                 // construct equivalent phrases
                 var equivalentPhrases = new List<string> { "" };
-                foreach (var charPoolWithWords in bundle.OrderredCharPoolsWithWords)
+                foreach (var charPoolWithWords in bundle.OrderedListOdWordEquivalencyClasses)
                 {
                     var tempList = new List<string>();
 
@@ -67,23 +67,23 @@ namespace RabbitHunter
         }
 
         // todo maybe can return Ienumerable<Answer> instead
-        private List<PartialCharPool> Recursive(
-            PartialCharPool partialCharPool,
+        private List<WordEquivalencyClassComposition> Recursive(
+            WordEquivalencyClassComposition wordEquivalencyClassComposition,
             string anagramCharPool,
             IDictionary<string, List<string>> charPoolToWordListsList,
             Memo memo)
         {
-            var newCandidates = new List<PartialCharPool>();
+            var newCandidates = new List<WordEquivalencyClassComposition>();
 
             foreach (var tuple in charPoolToWordListsList)
             {
-                var newPartialPhraseCharPool = new PartialCharPool(partialCharPool, new CharPoolWithWords(tuple.Key, tuple.Value));
+                var newPartialPhraseCharPool = new WordEquivalencyClassComposition(wordEquivalencyClassComposition, new WordEquivalencyClass(tuple.Key, tuple.Value));
 
                 // check against memo
-                if (memo.Contains(newPartialPhraseCharPool.Value))
+                if (memo.Contains(newPartialPhraseCharPool.CharPool))
                 {
                     //we have been here before...
-                    var val = memo[newPartialPhraseCharPool.Value];
+                    var val = memo[newPartialPhraseCharPool.CharPool];
                     //its a dead end!
                     if (val == null)
                     {
@@ -91,7 +91,7 @@ namespace RabbitHunter
                     }
                 }
 
-                var remainder = anagramCharPool.SubtractChars(newPartialPhraseCharPool.Value.Alphabetize());
+                var remainder = anagramCharPool.SubtractChars(newPartialPhraseCharPool.CharPool.Alphabetize());
 
                 // not a fit
                 if (remainder == null)
@@ -104,7 +104,7 @@ namespace RabbitHunter
                 {
                     newPartialPhraseCharPool.IsDeadend = false;
                     newCandidates.Add(newPartialPhraseCharPool);
-                    partialCharPool.IsDeadend = false;
+                    wordEquivalencyClassComposition.IsDeadend = false;
                     continue;
                 }
 
@@ -115,24 +115,24 @@ namespace RabbitHunter
                     var candidates = Recursive(newPartialPhraseCharPool, anagramCharPool, charPoolToWordListsList, memo);
                     if (candidates.Count == 0)
                     {
-                        partialCharPool.IsDeadend = partialCharPool.IsDeadend && true;
+                        wordEquivalencyClassComposition.IsDeadend = wordEquivalencyClassComposition.IsDeadend && true;
                     }
                     else
                     {
                         newCandidates.AddRange(candidates);
-                        partialCharPool.IsDeadend = partialCharPool.IsDeadend && false;
+                        wordEquivalencyClassComposition.IsDeadend = wordEquivalencyClassComposition.IsDeadend && false;
                     }
                     continue;
                 }
             }
 
-            if (partialCharPool.IsDeadend)
+            if (wordEquivalencyClassComposition.IsDeadend)
             {
-                memo.AddDeadEnd(partialCharPool);
+                memo.AddDeadEnd(wordEquivalencyClassComposition);
             }
             else
             {
-                //memo.AddSolution(partialCharPool);
+                //memo.AddSolution(ListOfCompositionAlternatives);
             }
 
             return newCandidates;
