@@ -70,13 +70,12 @@ namespace RabbitHunter
         private List<PartialCharPool> Recursive(
             PartialCharPool partialCharPool,
             string anagramCharPool,
-            IDictionary<string, List<string>> charPoolsToWordLists,
+            IDictionary<string, List<string>> charPoolToWordListsList,
             Memo memo)
         {
             var newCandidates = new List<PartialCharPool>();
-            bool partialCharPoolIsDeadEnd = true;
 
-            foreach (var tuple in charPoolsToWordLists)
+            foreach (var tuple in charPoolToWordListsList)
             {
                 var newPartialPhraseCharPool = new PartialCharPool(partialCharPool, new CharPoolWithWords(tuple.Key, tuple.Value));
 
@@ -103,9 +102,9 @@ namespace RabbitHunter
                 // a fit
                 if (remainder.Length == 0)
                 {
-                    var candidates = new List<PartialCharPool>() { newPartialPhraseCharPool };
-                    newCandidates.AddRange(candidates);
-                    partialCharPoolIsDeadEnd = false;
+                    newPartialPhraseCharPool.IsDeadend = false;
+                    newCandidates.Add(newPartialPhraseCharPool);
+                    partialCharPool.IsDeadend = false;
                     continue;
                 }
 
@@ -113,21 +112,21 @@ namespace RabbitHunter
                 if (remainder.Length > 0)
                 {
 
-                    var candidates = Recursive(newPartialPhraseCharPool, anagramCharPool, charPoolsToWordLists, memo);
+                    var candidates = Recursive(newPartialPhraseCharPool, anagramCharPool, charPoolToWordListsList, memo);
                     if (candidates.Count == 0)
                     {
-                        partialCharPoolIsDeadEnd = partialCharPoolIsDeadEnd && true;
+                        partialCharPool.IsDeadend = partialCharPool.IsDeadend && true;
                     }
                     else
                     {
                         newCandidates.AddRange(candidates);
-                        partialCharPoolIsDeadEnd = partialCharPoolIsDeadEnd && false;
+                        partialCharPool.IsDeadend = partialCharPool.IsDeadend && false;
                     }
                     continue;
                 }
             }
 
-            if (partialCharPoolIsDeadEnd)
+            if (partialCharPool.IsDeadend)
             {
                 memo.AddDeadEnd(partialCharPool);
             }
