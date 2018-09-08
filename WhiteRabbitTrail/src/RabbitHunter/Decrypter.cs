@@ -42,27 +42,22 @@ namespace RabbitHunter
 
         public class PartialCharPool
         {
-
             public List<CharPoolWithWords> CharPoolsWithWords { get; }
-            public string CharPool { get; }
-            public bool IsCharPoolEquivalentToAnagram { get; set; }
+            public string Value { get; }
 
             public PartialCharPool(List<CharPoolWithWords> charPoolsWithWords)
             {
-                IsCharPoolEquivalentToAnagram = false;
                 CharPoolsWithWords = charPoolsWithWords;
-                CharPool = string.Concat(charPoolsWithWords).Alphabetize();
+                Value = string.Concat(charPoolsWithWords).Alphabetize();
             }
 
             public PartialCharPool(PartialCharPool partialCharPool, CharPoolWithWords charPoolWithWords)
             {
-                IsCharPoolEquivalentToAnagram = false;
-
                 CharPoolsWithWords = new List<CharPoolWithWords>();
                 CharPoolsWithWords.AddRange(partialCharPool.CharPoolsWithWords);
                 CharPoolsWithWords.Add(charPoolWithWords);
 
-                CharPool = string.Concat(partialCharPool.CharPool, charPoolWithWords.Value).Alphabetize();
+                Value = string.Concat(partialCharPool.Value, charPoolWithWords.Value).Alphabetize();
 
             }
         }
@@ -83,27 +78,27 @@ namespace RabbitHunter
             foreach (var bundle in candidateBundles)
             {
                 // construct equivalent phrases
-                var constructionList = new List<string> { "" };
+                var equivalentPhrases = new List<string> { "" };
                 foreach (var charPoolWithWords in bundle.CharPoolsWithWords)
                 {
-                    var list2 = new List<string>();
+                    var tempList = new List<string>();
 
                     foreach (var word in charPoolWithWords.Words)
                     {
-                        foreach (var phraseUnderConstruction in constructionList)
+                        foreach (var phraseUnderConstruction in equivalentPhrases)
                         {
                             if (phraseUnderConstruction == "")
                             {
-                                list2.Add(word);
+                                tempList.Add(word);
                             }
-                            list2.Add(phraseUnderConstruction + " " + word);
+                            tempList.Add(phraseUnderConstruction + " " + word);
                         }
                     }
 
-                    constructionList = list2;
+                    equivalentPhrases = tempList;
                 }
 
-                foreach (var phrase in constructionList)
+                foreach (var phrase in equivalentPhrases)
                 {
                     if (_encrypter.Hash(phrase) == hash)
                     {
@@ -131,24 +126,22 @@ namespace RabbitHunter
             {
                 var newPartialPhraseCharPool = new PartialCharPool(partialCharPool, new CharPoolWithWords(tuple.Key, tuple.Value));
 
-                if (deadEnds.ContainsKey(newPartialPhraseCharPool.CharPool) )
+                if (deadEnds.ContainsKey(newPartialPhraseCharPool.Value) )
                 {
                     continue;
                 }
 
-                var remainder = anagramCharPool.SubtractChars(newPartialPhraseCharPool.CharPool.Alphabetize());
+                var remainder = anagramCharPool.SubtractChars(newPartialPhraseCharPool.Value.Alphabetize());
 
                 // not a fit
                 if (remainder == null)
                 {
-
                     continue;
                 }
 
                 // a fit
                 if (remainder.Length == 0)
                 {
-                    newPartialPhraseCharPool.IsCharPoolEquivalentToAnagram = true;
                     var candidates = new List<PartialCharPool>() {newPartialPhraseCharPool};
                     if (candidates.Count == 0)
                     {
@@ -184,7 +177,7 @@ namespace RabbitHunter
 
             if (partialCharPoolIsDeadEnd)
             {
-                deadEnds.Add(partialCharPool.CharPool, true);
+                deadEnds.Add(partialCharPool.Value, true);
             }
 
             return newCandidates;
