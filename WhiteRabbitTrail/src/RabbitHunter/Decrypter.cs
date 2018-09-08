@@ -24,9 +24,9 @@ namespace RabbitHunter
 
             var candidateAnswer = new PartialCharPool(new List<CharPoolWithWords>()); //answerType
 
-            var deadEnds = new Dictionary<string, bool>();
+            var memo = new Memo();
 
-            var candidateBundles = Recursive(candidateAnswer, anagramCharPool, charPoolsToStringLists, deadEnds);
+            var candidateBundles = Recursive(candidateAnswer, anagramCharPool, charPoolsToStringLists, memo);
 
 
             foreach (var bundle in candidateBundles)
@@ -71,7 +71,7 @@ namespace RabbitHunter
             PartialCharPool partialCharPool,
             string anagramCharPool,
             IDictionary<string, List<string>> charPoolsToWordLists,
-            IDictionary<string, bool> deadEnds)
+            Memo memo)
         {
             var newCandidates = new List<PartialCharPool>();
             bool partialCharPoolIsDeadEnd = true;
@@ -80,9 +80,16 @@ namespace RabbitHunter
             {
                 var newPartialPhraseCharPool = new PartialCharPool(partialCharPool, new CharPoolWithWords(tuple.Key, tuple.Value));
 
-                if (deadEnds.ContainsKey(newPartialPhraseCharPool.Value))
+                // check against memo
+                if (memo.Contains(newPartialPhraseCharPool.Value))
                 {
-                    continue;
+                    //we have been here before...
+                    var val = memo[newPartialPhraseCharPool.Value];
+                    //its a dead end!
+                    if (val == null)
+                    {
+                        continue;
+                    }
                 }
 
                 var remainder = anagramCharPool.SubtractChars(newPartialPhraseCharPool.Value.Alphabetize());
@@ -106,7 +113,7 @@ namespace RabbitHunter
                 if (remainder.Length > 0)
                 {
 
-                    var candidates = Recursive(newPartialPhraseCharPool, anagramCharPool, charPoolsToWordLists, deadEnds);
+                    var candidates = Recursive(newPartialPhraseCharPool, anagramCharPool, charPoolsToWordLists, memo);
                     if (candidates.Count == 0)
                     {
                         partialCharPoolIsDeadEnd = partialCharPoolIsDeadEnd && true;
@@ -122,16 +129,46 @@ namespace RabbitHunter
 
             if (partialCharPoolIsDeadEnd)
             {
-                deadEnds.Add(partialCharPool.Value, true);
+                memo.AddDeadEnd(partialCharPool);
+            }
+            else
+            {
+                //memo.AddSolution(partialCharPool);
             }
 
             return newCandidates;
         }
-
         private List<string> RemoveIrrelevantWords(IEnumerable<string> words, string anagram)
         {
             return words.Where(x => anagram.SubtractChars(x) != null).ToList();
         }
 
+    }
+
+    public class Memo
+    {
+        private readonly IDictionary<string, bool?> _dict;
+
+        public Memo()
+        {
+            _dict = new Dictionary<string, bool?>();
+        }
+
+        public void AddSolution(PartialCharPool partialCharPool)
+        {
+            _dict.Add(partialCharPool.Value, true);
+        }
+
+        public void AddDeadEnd(PartialCharPool partialCharPool)
+        {
+            _dict.Add(partialCharPool.Value, null);
+        }
+
+        public bool Contains(string value)
+        {
+            return _dict.ContainsKey(value);
+        }
+
+        public bool? this[string value] => _dict[value];
     }
 }
