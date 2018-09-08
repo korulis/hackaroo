@@ -159,10 +159,10 @@ namespace RabbitHunter
                         newCandidates.AddRange(candidates);
                         partialCharPoolIsDeadEnd = false;
                     }
+                    continue;
                 }
 
                 // inconclusive
-
                 if (remainder.Length > 0)
                 {
 
@@ -176,6 +176,7 @@ namespace RabbitHunter
                         newCandidates.AddRange(candidates);
                         partialCharPoolIsDeadEnd = false;
                     }
+                    continue;
                 }
 
 
