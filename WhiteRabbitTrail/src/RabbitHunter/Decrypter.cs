@@ -20,13 +20,13 @@ namespace RabbitHunter
         {
             var anagramCharPool = targetAnagram.Alphabetize();
             var targetAnagramRelevantWords = RemoveIrrelevantWords(_words, anagramCharPool);
-            var charPoolsToStringLists = WordEquivalencyClass.GetDictionary(targetAnagramRelevantWords);
+            var equivalencyClasses = WordEquivalencyClass.FromWordList(targetAnagramRelevantWords);
 
             var candidateAnswer = new WordEquivalencyClassComposition(new List<WordEquivalencyClass>()); //answerType
 
             var memo = new Memo();
 
-            var candidateBundles = Recursive(candidateAnswer, anagramCharPool, charPoolsToStringLists, memo);
+            var candidateBundles = Recursive(candidateAnswer, anagramCharPool, equivalencyClasses, memo);
 
 
             foreach (var bundle in candidateBundles)
@@ -70,20 +70,20 @@ namespace RabbitHunter
         private List<WordEquivalencyClassComposition> Recursive(
             WordEquivalencyClassComposition wordEquivalencyClassComposition,
             string anagramCharPool,
-            IDictionary<string, List<string>> charPoolToWordListsList,
+            IList<WordEquivalencyClass> equivalencyClasses,
             Memo memo)
         {
             var newCandidates = new List<WordEquivalencyClassComposition>();
 
-            foreach (var tuple in charPoolToWordListsList)
+            foreach (var equivalencyClass in equivalencyClasses)
             {
-                var newPartialPhraseCharPool = new WordEquivalencyClassComposition(wordEquivalencyClassComposition, new WordEquivalencyClass(tuple.Key, tuple.Value));
+                var newPartialPhraseComposition = new WordEquivalencyClassComposition(wordEquivalencyClassComposition, new WordEquivalencyClass(equivalencyClass.CharPool, equivalencyClass.Words));
 
                 // check against memo
-                if (memo.Contains(newPartialPhraseCharPool.CharPool))
+                if (memo.Contains(newPartialPhraseComposition.CharPool))
                 {
                     //we have been here before...
-                    var val = memo[newPartialPhraseCharPool.CharPool];
+                    var val = memo[newPartialPhraseComposition.CharPool];
                     //its a dead end!
                     if (val == null)
                     {
@@ -91,7 +91,7 @@ namespace RabbitHunter
                     }
                 }
 
-                var remainder = anagramCharPool.SubtractChars(newPartialPhraseCharPool.CharPool.Alphabetize());
+                var remainder = anagramCharPool.SubtractChars(newPartialPhraseComposition.CharPool.Alphabetize());
 
                 // not a fit
                 if (remainder == null)
@@ -102,8 +102,8 @@ namespace RabbitHunter
                 // a fit
                 if (remainder.Length == 0)
                 {
-                    newPartialPhraseCharPool.IsDeadend = false;
-                    newCandidates.Add(newPartialPhraseCharPool);
+                    newPartialPhraseComposition.IsDeadend = false;
+                    newCandidates.Add(newPartialPhraseComposition);
                     wordEquivalencyClassComposition.IsDeadend = false;
                     continue;
                 }
@@ -112,7 +112,7 @@ namespace RabbitHunter
                 if (remainder.Length > 0)
                 {
 
-                    var candidates = Recursive(newPartialPhraseCharPool, anagramCharPool, charPoolToWordListsList, memo);
+                    var candidates = Recursive(newPartialPhraseComposition, anagramCharPool, equivalencyClasses, memo);
                     if (candidates.Count == 0)
                     {
                         wordEquivalencyClassComposition.IsDeadend = wordEquivalencyClassComposition.IsDeadend && true;

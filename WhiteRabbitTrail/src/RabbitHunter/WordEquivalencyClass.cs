@@ -27,5 +27,10 @@ namespace RabbitHunter
 
             return result;
         }
+
+        public static IList<WordEquivalencyClass> FromWordList(List<string> targetAnagramRelevantWords)
+        {
+            return GetDictionary(targetAnagramRelevantWords).Select(x => new WordEquivalencyClass(x.Key, x.Value)).ToList();
+        }
     }
 }
