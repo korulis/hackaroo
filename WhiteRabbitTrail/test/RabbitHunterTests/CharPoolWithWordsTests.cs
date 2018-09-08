@@ -18,9 +18,11 @@ namespace RabbitHunterTests
             {
                 Assert.Equal(expected[i].Value, actual[i].Value);
                 Assert.Equal(expected[i].Words.Count, actual[i].Words.Count);
+                var expectedWords = expected[i].Words.ToArray();
+                var actualWords = actual[i].Words.ToArray();
                 for (int j = 0; j < actual[i].Words.Count; j++)
                 {
-                    Assert.Equal(expected[i].Words[j], actual[i].Words[j]);
+                    Assert.Equal(expectedWords[j], actualWords[j]);
                 }
             }
         }

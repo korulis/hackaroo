@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 
 namespace RabbitHunter
 {
@@ -12,7 +13,8 @@ namespace RabbitHunter
         {
             IsDeadend = true;
             OrderredCharPoolsWithWords = orderredCharPoolsWithWords;
-            Value = string.Concat(orderredCharPoolsWithWords).Alphabetize();
+            var values = orderredCharPoolsWithWords.Select(x => x.Value);
+            Value = string.Concat(values).Alphabetize();
         }
 
         public PartialCharPool(PartialCharPool partialCharPool, CharPoolWithWords charPoolWithWords)

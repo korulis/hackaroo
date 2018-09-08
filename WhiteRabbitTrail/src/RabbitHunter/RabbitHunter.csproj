@@ -45,6 +45,7 @@
     <Compile Include="Decrypter.cs" />
     <Compile Include="Encrypter.cs" />
     <Compile Include="Extensions.cs" />
+    <Compile Include="Memo.cs" />
     <Compile Include="NoPhraseFound.cs" />
     <Compile Include="PartialCharPool.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

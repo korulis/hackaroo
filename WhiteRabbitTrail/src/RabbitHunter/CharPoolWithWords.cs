@@ -7,7 +7,7 @@ namespace RabbitHunter
     {
         public string Value { get; }
 
-        public List<string> Words { get; }
+        public IReadOnlyCollection<string> Words { get; }
 
         public CharPoolWithWords(string value, List<string> words)
         {
