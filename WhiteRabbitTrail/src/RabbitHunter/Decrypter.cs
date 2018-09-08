@@ -124,8 +124,6 @@ namespace RabbitHunter
             IDictionary<string, List<string>> charPoolsToWordLists,
             IDictionary<string,bool> deadEnds)
         {
-            if (partialCharPool.IsCharPoolEquivalentToAnagram) return new List<PartialCharPool> { partialCharPool };
-
             var newCandidates = new List<PartialCharPool>();
             bool partialCharPoolIsDeadEnd = true;
 
@@ -140,29 +138,47 @@ namespace RabbitHunter
 
                 var remainder = anagramCharPool.SubtractChars(newPartialPhraseCharPool.CharPool.Alphabetize());
 
+                // not a fit
                 if (remainder == null)
                 {
 
                     continue;
                 }
 
-
-                if (remainder == string.Empty)
+                // a fit
+                if (remainder.Length == 0)
                 {
                     newPartialPhraseCharPool.IsCharPoolEquivalentToAnagram = true;
+                    var candidates = new List<PartialCharPool>() {newPartialPhraseCharPool};
+                    if (candidates.Count == 0)
+                    {
+                        partialCharPoolIsDeadEnd = true;
+                    }
+                    else
+                    {
+                        newCandidates.AddRange(candidates);
+                        partialCharPoolIsDeadEnd = false;
+                    }
                 }
 
-                var candidates = Recursive(newPartialPhraseCharPool, anagramCharPool, charPoolsToWordLists, deadEnds);
+                // inconclusive
 
-                if (candidates.Count == 0)
+                if (remainder.Length > 0)
                 {
-                    partialCharPoolIsDeadEnd = true;
+
+                    var candidates = Recursive(newPartialPhraseCharPool, anagramCharPool, charPoolsToWordLists, deadEnds);
+                    if (candidates.Count == 0)
+                    {
+                        partialCharPoolIsDeadEnd = true;
+                    }
+                    else
+                    {
+                        newCandidates.AddRange(candidates);
+                        partialCharPoolIsDeadEnd = false;
+                    }
                 }
-                else
-                {
-                    newCandidates.AddRange(candidates);
-                    partialCharPoolIsDeadEnd = false;
-                }
+
+
             }
 
             if (partialCharPoolIsDeadEnd)
