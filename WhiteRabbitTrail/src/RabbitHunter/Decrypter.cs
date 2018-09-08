@@ -16,52 +16,6 @@ namespace RabbitHunter
             _encrypter = encrypter;
         }
 
-        public class Answer
-        {
-            public bool IsCorrectLength { get; set; }
-
-            public string Value { get; set; }
-
-            public Answer() : this(partialPhrase: string.Empty, word: string.Empty)
-            {
-                IsCorrectLength = false;
-            }
-
-            public Answer(string partialPhrase, string word)
-            {
-                if (string.IsNullOrEmpty(partialPhrase))
-                {
-                    Value = word;
-                }
-                else
-                {
-                    Value = partialPhrase + " " + word;
-                }
-            }
-        }
-
-        public class PartialCharPool
-        {
-            public List<CharPoolWithWords> CharPoolsWithWords { get; }
-            public string Value { get; }
-
-            public PartialCharPool(List<CharPoolWithWords> charPoolsWithWords)
-            {
-                CharPoolsWithWords = charPoolsWithWords;
-                Value = string.Concat(charPoolsWithWords).Alphabetize();
-            }
-
-            public PartialCharPool(PartialCharPool partialCharPool, CharPoolWithWords charPoolWithWords)
-            {
-                CharPoolsWithWords = new List<CharPoolWithWords>();
-                CharPoolsWithWords.AddRange(partialCharPool.CharPoolsWithWords);
-                CharPoolsWithWords.Add(charPoolWithWords);
-
-                Value = string.Concat(partialCharPool.Value, charPoolWithWords.Value).Alphabetize();
-
-            }
-        }
-
         public string GetDecryptedPhrase(string hash, string targetAnagram)
         {
             var anagramCharPool = targetAnagram.Alphabetize();
@@ -79,7 +33,7 @@ namespace RabbitHunter
             {
                 // construct equivalent phrases
                 var equivalentPhrases = new List<string> { "" };
-                foreach (var charPoolWithWords in bundle.CharPoolsWithWords)
+                foreach (var charPoolWithWords in bundle.OrderredCharPoolsWithWords)
                 {
                     var tempList = new List<string>();
 
