@@ -68,7 +68,7 @@ namespace RabbitHunter
 
         // todo maybe can return Ienumerable<Answer> instead
         private List<WordEquivalencyClassComposition> Recursive(
-            WordEquivalencyClassComposition wordEquivalencyClassComposition,
+            WordEquivalencyClassComposition currentWord,
             string anagramCharPool,
             IList<WordEquivalencyClass> equivalencyClasses,
             Memo memo)
@@ -77,17 +77,22 @@ namespace RabbitHunter
 
             foreach (var equivalencyClass in equivalencyClasses)
             {
-                var newPartialPhraseComposition = new WordEquivalencyClassComposition(wordEquivalencyClassComposition, new WordEquivalencyClass(equivalencyClass.CharPool, equivalencyClass.Words));
+                var newPartialPhraseComposition = new WordEquivalencyClassComposition(currentWord, new WordEquivalencyClass(equivalencyClass.CharPool, equivalencyClass.Words));
 
                 // check against memo
                 if (memo.ContainsKey(newPartialPhraseComposition.CharPool))
                 {
                     //we have been here before...
                     var val = memo[newPartialPhraseComposition.CharPool];
-                    //its a dead end!
                     if (val == null)
                     {
+                        //its a dead end!
                         continue;
+                    }
+                    else
+                    {
+                        //newCandidates.Add(newPartialPhraseComposition);
+                        //continue;
                     }
                 }
 
@@ -104,7 +109,7 @@ namespace RabbitHunter
                 {
                     newPartialPhraseComposition.IsDeadend = false;
                     newCandidates.Add(newPartialPhraseComposition);
-                    wordEquivalencyClassComposition.IsDeadend = false;
+                    currentWord.IsDeadend = false;
                     continue;
                 }
 
@@ -115,24 +120,25 @@ namespace RabbitHunter
                     var candidates = Recursive(newPartialPhraseComposition, anagramCharPool, equivalencyClasses, memo);
                     if (candidates.Count == 0)
                     {
-                        wordEquivalencyClassComposition.IsDeadend = wordEquivalencyClassComposition.IsDeadend && true;
+                        currentWord.IsDeadend = currentWord.IsDeadend && true;
                     }
                     else
                     {
+                        memo.AddSolvable(currentWord);
                         newCandidates.AddRange(candidates);
-                        wordEquivalencyClassComposition.IsDeadend = wordEquivalencyClassComposition.IsDeadend && false;
+                        currentWord.IsDeadend = currentWord.IsDeadend && false;
                     }
                     continue;
                 }
             }
 
-            if (wordEquivalencyClassComposition.IsDeadend)
+            if (currentWord.IsDeadend)
             {
-                memo.AddDeadEnd(wordEquivalencyClassComposition);
+                memo.AddDeadEnd(currentWord);
             }
             else
             {
-                //memo.AddSolution(ListOfCompositionAlternatives);
+                memo.AddSolution(currentWord);
             }
 
             return newCandidates;

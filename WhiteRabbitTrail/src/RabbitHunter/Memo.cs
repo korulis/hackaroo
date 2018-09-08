@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 
 namespace RabbitHunter
@@ -11,15 +12,29 @@ namespace RabbitHunter
             _dict = new Dictionary<string, CompositionAlternatives>();
         }
 
+        public void AddSolvable(WordEquivalencyClassComposition wordEquivalencyClassComposition)
+        {
+            var charPool = wordEquivalencyClassComposition.CharPool;
+            if (ContainsKey(charPool))
+            {
+                //throw new ArgumentException("I should not be here.");
+                return;
+            }
+
+            _dict.Add(charPool, new CompositionAlternatives(wordEquivalencyClassComposition));
+        }
+
         public void AddSolution(WordEquivalencyClassComposition wordEquivalencyClassComposition)
         {
             var charPool = wordEquivalencyClassComposition.CharPool;
             if (!ContainsKey(charPool))
             {
-                _dict.Add(charPool, new CompositionAlternatives(wordEquivalencyClassComposition));
+                var compositionAlternatives = new CompositionAlternatives(wordEquivalencyClassComposition);
+                _dict.Add(charPool, compositionAlternatives);
             }
             else
             {
+                //todo must check if this is duplicate structure that i am adding (optimisation)
                 _dict[charPool].AddAlternative(wordEquivalencyClassComposition);
             }
 
