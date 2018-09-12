@@ -67,7 +67,6 @@ namespace RabbitHunter
             throw new NoPhraseFound("no phrase found");
         }
 
-        // todo maybe can return Ienumerable<Answer> instead
         private List<WordEquivalencyClassComposition> Recursive(
             WordEquivalencyClassComposition currentWord,
             string anagramCharPool,
@@ -79,27 +78,8 @@ namespace RabbitHunter
 
             foreach (var equivalencyClass in equivalencyClasses)
             {
-                if (equivalencyClass.CharPool == "ddelorrw" && level == 0)
-                {
-                    
-                }
-
-                if (level == 0)
-                {
-                    
-                }
-
-                if (equivalencyClass.CharPool == "al" && level == 1)
-                {
-
-                }
-
-
-                //todo optimization: check current word against memo
-
                 var newPartialPhraseComposition = new WordEquivalencyClassComposition(currentWord,
                     new WordEquivalencyClass(equivalencyClass.CharPool, equivalencyClass.Words));
-
 
                 var remainder = anagramCharPool.SubtractChars(newPartialPhraseComposition.CharPool.Alphabetize());
 
@@ -155,12 +135,6 @@ namespace RabbitHunter
                     var countBeforeRecursion = memo.SolutionCount;
                     var candidates = Recursive(newPartialPhraseComposition, anagramCharPool, equivalencyClasses, memo, level + 1);
                     var countAfterRecursion = memo.SolutionCount;
-
-
-                    if (newPartialPhraseComposition.CharPool == "ddelorrw")
-                    {
-                        
-                    }
 
                     if (countBeforeRecursion == countAfterRecursion)
                     {
