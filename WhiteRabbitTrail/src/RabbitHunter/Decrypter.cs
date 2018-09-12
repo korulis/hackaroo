@@ -24,16 +24,17 @@ namespace RabbitHunter
 
             var candidateAnswer = new WordEquivalencyClassComposition(new List<WordEquivalencyClass>()); //answerType
 
-            var memo = new Memo();
+            var memo = new Memo(anagramCharPool);
 
-            var candidateBundles = Recursive(candidateAnswer, anagramCharPool, equivalencyClasses, memo);
+            var candidateBundles2 = Recursive(candidateAnswer, anagramCharPool, equivalencyClasses, memo, 0);
 
+            var candidateBundles = memo.Solutions.TempList;
 
             foreach (var bundle in candidateBundles)
             {
                 // construct equivalent phrases
                 var equivalentPhrases = new List<string> { "" };
-                foreach (var charPoolWithWords in bundle.OrderedListOdWordEquivalencyClasses)
+                foreach (var charPoolWithWords in bundle.OrderedListOfWordEquivalencyClasses)
                 {
                     var tempList = new List<string>();
 
@@ -71,36 +72,45 @@ namespace RabbitHunter
             WordEquivalencyClassComposition currentWord,
             string anagramCharPool,
             IList<WordEquivalencyClass> equivalencyClasses,
-            Memo memo)
+            Memo memo,
+            int level)
         {
             var newCandidates = new List<WordEquivalencyClassComposition>();
 
             foreach (var equivalencyClass in equivalencyClasses)
             {
-                var newPartialPhraseComposition = new WordEquivalencyClassComposition(currentWord, new WordEquivalencyClass(equivalencyClass.CharPool, equivalencyClass.Words));
-
-                // check against memo
-                if (memo.ContainsKey(newPartialPhraseComposition.CharPool))
+                if (equivalencyClass.CharPool == "ddelorrw" && level == 0)
                 {
-                    //we have been here before...
-                    var val = memo[newPartialPhraseComposition.CharPool];
-                    if (val == null)
-                    {
-                        //its a dead end!
-                        continue;
-                    }
-                    else
-                    {
-                        //newCandidates.Add(newPartialPhraseComposition);
-                        //continue;
-                    }
+                    
                 }
+
+                if (level == 0)
+                {
+                    
+                }
+
+                if (equivalencyClass.CharPool == "al" && level == 1)
+                {
+
+                }
+
+
+                //todo optimization: check current word against memo
+
+                var newPartialPhraseComposition = new WordEquivalencyClassComposition(currentWord,
+                    new WordEquivalencyClass(equivalencyClass.CharPool, equivalencyClass.Words));
+
 
                 var remainder = anagramCharPool.SubtractChars(newPartialPhraseComposition.CharPool.Alphabetize());
 
                 // not a fit
                 if (remainder == null)
                 {
+                    newPartialPhraseComposition.IsDeadend = true;
+                    if (!memo.ContainsKey(newPartialPhraseComposition.CharPool))
+                    {
+                        memo.AddDeadEnd(newPartialPhraseComposition);
+                    }
                     continue;
                 }
 
@@ -108,37 +118,64 @@ namespace RabbitHunter
                 if (remainder.Length == 0)
                 {
                     newPartialPhraseComposition.IsDeadend = false;
+                    memo.AddSolution(newPartialPhraseComposition);
+
                     newCandidates.Add(newPartialPhraseComposition);
-                    currentWord.IsDeadend = false;
                     continue;
                 }
 
                 // inconclusive
                 if (remainder.Length > 0)
                 {
-
-                    var candidates = Recursive(newPartialPhraseComposition, anagramCharPool, equivalencyClasses, memo);
-                    if (candidates.Count == 0)
+                    newPartialPhraseComposition.IsDeadend = false;
+                    // check new word against memo
+                    if (memo.ContainsKey(newPartialPhraseComposition.CharPool))
                     {
-                        currentWord.IsDeadend = currentWord.IsDeadend && true;
+                        //we have been here before...
+                        var val = memo[newPartialPhraseComposition.CharPool];
+                        if (val == null)
+                        {
+                            //its a dead end!
+                            continue;
+                        }
+                        else
+                        {
+                            if (val.IsDeadend == false)
+                            {
+                                memo.GenerateAndAddFullSolution_FromIncomplete(newPartialPhraseComposition);
+                                continue;
+                            }
+                            else
+                            {
+                                throw new ArgumentException("I should not be here again!");
+                            }
+                        }
+                    }
+
+                    var countBeforeRecursion = memo.SolutionCount;
+                    var candidates = Recursive(newPartialPhraseComposition, anagramCharPool, equivalencyClasses, memo, level + 1);
+                    var countAfterRecursion = memo.SolutionCount;
+
+
+                    if (newPartialPhraseComposition.CharPool == "ddelorrw")
+                    {
+                        
+                    }
+
+                    if (countBeforeRecursion == countAfterRecursion)
+                    {
+                        newPartialPhraseComposition.IsDeadend = true;
+                        memo.AddDeadEnd(newPartialPhraseComposition);
                     }
                     else
                     {
-                        memo.AddSolvable(currentWord);
+                        newPartialPhraseComposition.IsDeadend = false;
+                        memo.AddSolvable(newPartialPhraseComposition);
+
                         newCandidates.AddRange(candidates);
-                        currentWord.IsDeadend = currentWord.IsDeadend && false;
                     }
                     continue;
                 }
-            }
-
-            if (currentWord.IsDeadend)
-            {
-                memo.AddDeadEnd(currentWord);
-            }
-            else
-            {
-                memo.AddSolution(currentWord);
             }
 
             return newCandidates;

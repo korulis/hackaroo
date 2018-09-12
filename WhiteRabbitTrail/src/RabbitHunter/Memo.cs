@@ -5,10 +5,12 @@ namespace RabbitHunter
 {
     public class Memo
     {
+        private readonly string _anagram;
         private readonly IDictionary<string, CompositionAlternatives> _dict;
 
-        public Memo()
+        public Memo(string anagram)
         {
+            _anagram = anagram;
             _dict = new Dictionary<string, CompositionAlternatives>();
         }
 
@@ -17,11 +19,12 @@ namespace RabbitHunter
             var charPool = wordEquivalencyClassComposition.CharPool;
             if (ContainsKey(charPool))
             {
-                //throw new ArgumentException("I should not be here.");
+                throw new ArgumentException("I should not be here.");
                 return;
             }
 
-            _dict.Add(charPool, new CompositionAlternatives(wordEquivalencyClassComposition));
+            var compositionAlternatives = CompositionAlternatives.NotDeadend(wordEquivalencyClassComposition);  
+            _dict.Add(charPool, compositionAlternatives);
         }
 
         public void AddSolution(WordEquivalencyClassComposition wordEquivalencyClassComposition)
@@ -51,5 +54,21 @@ namespace RabbitHunter
         }
 
         public CompositionAlternatives this[string value] => _dict[value];
+
+        public void GenerateAndAddFullSolution_FromIncomplete(WordEquivalencyClassComposition inComplete)
+        {
+            try
+            {
+                Solutions.AddFromIncomplete(inComplete);
+            }
+            catch (Exception e)
+            {
+                throw new ArgumentException("I should not be here 3");
+            }
+        }
+
+        public CompositionAlternatives Solutions => _dict[_anagram];
+
+        public int SolutionCount => _dict.ContainsKey(_anagram) ? _dict[_anagram].TempList.Count : 0;
     }
 }
