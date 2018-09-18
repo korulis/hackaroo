@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Globalization;
-using System.IO;
 using System.Linq;
-using System.Security.Cryptography.X509Certificates;
 using RabbitHunterTests;
 
 namespace RabbitHunter
@@ -32,16 +29,6 @@ namespace RabbitHunter
             var candidateBundles2 = Recursive(candidateAnswer, anagramCharPool, equivalencyClasses, memo, 0);
 
             var candidateBundles = memo.Solutions.TempList;
-
-
-            ////log
-            var messages = new List<string>()
-            {
-                DateTime.Now.ToString(CultureInfo.InvariantCulture),
-                memo.SolutionCount + " count of the anagram charPool alternative combinations.",
-                memo.Count + " charPools count."
-            };
-            Log(messages.ToArray());
 
             foreach (var bundle in candidateBundles)
             {
@@ -78,11 +65,6 @@ namespace RabbitHunter
 
 
             throw new NoPhraseFound("no phrase found");
-        }
-
-        public static void Log(params string[] messages)
-        {
-            File.AppendAllLines("C:/asdf.txt", messages);
         }
 
         private List<WordEquivalencyClassComposition> Recursive(

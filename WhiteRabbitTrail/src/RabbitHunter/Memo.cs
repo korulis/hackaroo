@@ -70,7 +70,5 @@ namespace RabbitHunter
         public CompositionAlternatives Solutions => _dict[_anagram];
 
         public int SolutionCount => _dict.ContainsKey(_anagram) ? _dict[_anagram].TempList.Count : 0;
-
-        public int Count => _dict.Count;
     }
 }
