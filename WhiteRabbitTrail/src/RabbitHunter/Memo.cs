@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using RabbitHunter.V1;
 
 namespace RabbitHunter
 {

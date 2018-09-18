@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using RabbitHunter;
+using RabbitHunter.V1;
 using Xunit;
 
 namespace RabbitHunterTests

@@ -1,9 +1,8 @@
 using System;
 using System.Collections.Generic;
-using System.Data.SqlClient;
 using System.Linq;
 
-namespace RabbitHunter
+namespace RabbitHunter.V1
 {
     public class CompositionAlternatives : AnagramBuilder
     {
