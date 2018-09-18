@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using RabbitHunter;
@@ -11,16 +13,19 @@ namespace RabbitHunterTests
 
         [Theory]
         [InlineData("derworld al", "d097ab47bf840e5457753be73b428581", "derworld al")]
-        //[InlineData("underworld al", "1a2220030900a307be8b72b571986f50", "underworld al")]
-        //[InlineData("underworld repeated al", "d0c88c88d585e1d3b756909a74d1850e", "underworld repeated al")]
+        [InlineData("underworld al", "1a2220030900a307be8b72b571986f50", "underworld al")]
+        [InlineData("underworld repeated al", "d0c88c88d585e1d3b756909a74d1850e", "underworld repeated al")]
         public void Tests(string anagram, string hash, string expectedPhrase)
         {
+            Decrypter.Log($"Start Benchmark test: {anagram} {hash} {expectedPhrase}");
+            Decrypter.Log(DateTime.Now.ToString(CultureInfo.InvariantCulture));
             var ecrypter = new Md5Encrypter();
             var words = File.ReadLines("fractionOfWords.txt").ToList();
             var sut = new Decrypter(words, ecrypter);
 
             var actualPhrase = sut.GetDecryptedPhrase(hash, anagram);
 
+            Decrypter.Log(DateTime.Now.ToString(CultureInfo.InvariantCulture));
             Assert.Equal(expectedPhrase, actualPhrase);
         }
 
