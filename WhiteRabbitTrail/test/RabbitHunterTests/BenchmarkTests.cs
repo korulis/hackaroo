@@ -11,7 +11,7 @@ namespace RabbitHunterTests
 
         [Theory]
         [InlineData("derworld al", "d097ab47bf840e5457753be73b428581", "derworld al")]
-        //[InlineData("underworld al", "1a2220030900a307be8b72b571986f50", "underworld al")]
+        [InlineData("underworld al", "1a2220030900a307be8b72b571986f50", "underworld al")]
         //[InlineData("underworld repeated al", "d0c88c88d585e1d3b756909a74d1850e", "underworld repeated al")]
         public void Tests(string anagram, string hash, string expectedPhrase)
         {
