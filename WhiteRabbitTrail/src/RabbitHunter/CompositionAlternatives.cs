@@ -56,85 +56,48 @@ namespace RabbitHunter
 
         public void AddFromIncomplete(WordEquivalencyClassComposition inComplete)
         {
-            // todo 
-            // 1 it chould be that i am adding a complete. make sure I add one isntead of zero
-            // 2 i do not add the tails... im just adding more of the same alternatives.
-            // 3 ...?
-
-            var listOfAlternativesThatStartsTheSame = GetSequencesThatStartTheSame(inComplete);
-            var overlainCompleteAlternatives = OverlayWithIncomplete(listOfAlternativesThatStartsTheSame, inComplete);
+            var overlainCompleteAlternatives = OverlayWithIncomplete(inComplete);
 
             _listOfCompositionAlternatives.AddRange(overlainCompleteAlternatives);
         }
 
         private IEnumerable<WordEquivalencyClassComposition> OverlayWithIncomplete(
-            IEnumerable<WordEquivalencyClassComposition> listOfAlternativesThatStartsTheSame,
             WordEquivalencyClassComposition inComplete)
         {
             var sequenceOfClassesOfIncomplete = inComplete.OrderedListOfWordEquivalencyClasses.ToList();
 
-            var result = listOfAlternativesThatStartsTheSame.Select(alternative =>
+            var result = _listOfCompositionAlternatives.Select(alternative =>
             {
 
                 List<WordEquivalencyClass> newList = sequenceOfClassesOfIncomplete.ToList();
-                //newList = alternative.OrderedListOfWordEquivalencyClasses
-                //    .Select((@class, i) => i < sequenceOfClasses.Count ? sequenceOfClasses[i] : @class).ToList();
 
-                var alternativeCompositionClasses = alternative.OrderedListOfWordEquivalencyClasses.ToList();
+                var compositionClassSequence = alternative.OrderedListOfWordEquivalencyClasses.ToList();
 
                 //todo optimize this loop
-                for (int i = 0; i < alternativeCompositionClasses.Count; i++)
+                var allowAdding = false;
+                for (int i = 0; i < compositionClassSequence.Count; i++)
                 {
-                    var incrementalCharPool = alternativeCompositionClasses.Take(i + 1).Select(x=>x.CharPool).Aggregate(string.Concat);
-                    if (inComplete.CharPool.SubtractChars(incrementalCharPool) == null )
+                    var incrementalCharPool = compositionClassSequence.Take(i + 1).Select(x => x.CharPool).Aggregate(string.Concat);
+                    if (inComplete.CharPool.SubtractChars(incrementalCharPool) == null)
                     {
-                        newList.Add(alternativeCompositionClasses[i]);
+                        if (allowAdding)
+                        {
+                            newList.Add(compositionClassSequence[i]);
+                        }
+                        else
+                        {
+                            return null;
+                        }
+                    }
+                    if (inComplete.CharPool.SubtractChars(incrementalCharPool) == string.Empty)
+                    {
+                        allowAdding = true;
                     }
                 }
 
 
                 return new WordEquivalencyClassComposition(newList) { IsDeadend = false };
-            }).ToList();
-
-            return result;
-        }
-
-        private List<WordEquivalencyClassComposition> GetSequencesThatStartTheSame(WordEquivalencyClassComposition inComplete)
-        {
-            var sequenceOfClassesCharPoll = inComplete.OrderedListOfWordEquivalencyClasses.Select(x => x.CharPool).ToList();
-
-            var result = new List<WordEquivalencyClassComposition>();
-
-            foreach (var composition in _listOfCompositionAlternatives) { 
-
-                var sequenceOfClasses2 = composition.OrderedListOfWordEquivalencyClasses.ToList();
-
-                var buildUpCharPool = "";
-                for (int i = 0; i < sequenceOfClasses2.Count; i++)
-                {
-                    var classs = sequenceOfClasses2[i];
-                    buildUpCharPool = string.Concat(buildUpCharPool, classs.CharPool);
-                    var diff = inComplete.CharPool.SubtractChars(buildUpCharPool);
-                    if (diff == null)
-                    {
-                        break;
-                    }
-                    if (diff.Length == 0)
-                    {
-                        result.Add(composition);
-                    }
-                    if (diff.Length > 0)
-                    {
-                        continue;
-                    }
-                }
-
-                //var charpool = sequenceOfClassesCharPools2.Take(sequenceOfClassesCharPoll.Count).Aggregate(string.Concat).Alphabetize();
-                //if (charpool == inComplete.CharPool)
-                //{
-                //    result.Add(compositionAlternative);
-                //}
-            }
+            }).Where(x => x != null).ToList();
 
             return result;
         }
