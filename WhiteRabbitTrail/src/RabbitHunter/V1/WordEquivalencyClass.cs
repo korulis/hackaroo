@@ -15,7 +15,7 @@ namespace RabbitHunter.V1
             Words = words;
         }
 
-        public static IDictionary<string,List<string>> GetDictionary(List<string> words)
+        public static IDictionary<string, List<string>> GetDictionary(List<string> words)
         {
             var result = words
                 .GroupBy(x => x.Alphabetize(), x => x)

@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using RabbitHunter.V1;
 using RabbitHunter.V2;
 using Xunit;
 
-namespace RabbitHunterTests
+namespace RabbitHunterTests.V2
 {
     public class MemoTests
     {
@@ -26,7 +25,14 @@ namespace RabbitHunterTests
         [InlineData(null)]
         public void ValidKey(string key)
         {
-            Assert.Throws<ArgumentException>(() => _sut.Add("", new WordEquivalencyClass(key, new List<string>())));
+            Assert.Throws<ArgumentException>(() => _sut.Add(key, GetValidBlobComposition(key)));
+        }
+
+        private static BlobComposition GetValidBlobComposition(string key)
+        {
+            return new BlobComposition(
+                new List<Blob> {
+                    new Blob(key, new List<string>())});
         }
     }
 }

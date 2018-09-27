@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Remoting.Messaging;
 using RabbitHunter.V1;
 using RabbitHunter.V2;
 using RabbitHunterTests;
@@ -29,9 +30,9 @@ namespace RabbitHunter
 
         }
 
-        private void RecursiveShrinking(
+        private List<BlobComposition> RecursiveShrinking(
             string anagramCharPool,
-            IList<WordEquivalencyClass> dictionary,
+            IList<Blob> dictionary,
             Memo2 memo,
             int level)
         {
@@ -39,7 +40,7 @@ namespace RabbitHunter
 
             //if (memo.IsDeadEnd())
             //{
-                
+
             //}
 
             foreach (var wordEquivalencyClass in dictionary)
@@ -52,14 +53,18 @@ namespace RabbitHunter
                     case null: //negative
                         break;
                     case "": // solution
-                        memo.Add(anagramCharPool, wordEquivalencyClass);
+                        memo.Add(anagramCharPool, new BlobComposition(new List<Blob> { wordEquivalencyClass }));
                         break;
                     default: //inconclusive
+                        var sols = BlobComposition.MakeConcatenated(RecursiveShrinking(difference, dictionary, memo, level++), wordEquivalencyClass);
+                        memo.AddMultiple(anagramCharPool, sols);
                         break;
                 }
 
 
             }
+
+            return memo.Get(anagramCharPool);
         }
 
         public string GetDecryptedPhrase2(string hash, string targetAnagram)

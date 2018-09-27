@@ -65,9 +65,10 @@
     <Compile Include="DecrypterAcceptanceTests.cs" />
     <Compile Include="DecrypterTests.cs" />
     <Compile Include="Md5Encrypter.cs" />
-    <Compile Include="MemoTests.cs" />
+    <Compile Include="V2\MemoTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="HelperTests.cs" />
+    <Compile Include="V2\BlobComposition2Tests.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
