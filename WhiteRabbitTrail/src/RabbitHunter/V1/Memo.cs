@@ -1,8 +1,7 @@
 using System;
 using System.Collections.Generic;
-using RabbitHunter.V1;
 
-namespace RabbitHunter
+namespace RabbitHunter.V1
 {
     public class Memo
     {

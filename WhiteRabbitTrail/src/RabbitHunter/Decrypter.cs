@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using RabbitHunter.V1;
+using RabbitHunter.V2;
 using RabbitHunterTests;
 
 namespace RabbitHunter
@@ -18,6 +19,50 @@ namespace RabbitHunter
         }
 
         public string GetDecryptedPhrase(string hash, string targetAnagram)
+        {
+            var anagramCharPool = targetAnagram.Alphabetize();
+            var targetAnagramRelevantWords = RemoveIrrelevantWords(_words, anagramCharPool);
+
+
+
+            return null;
+
+        }
+
+        private void RecursiveShrinking(
+            string anagramCharPool,
+            IList<WordEquivalencyClass> dictionary,
+            Memo2 memo,
+            int level)
+        {
+            //var solutions = memo.GetSolutions();
+
+            //if (memo.IsDeadEnd())
+            //{
+                
+            //}
+
+            foreach (var wordEquivalencyClass in dictionary)
+            {
+                var difference = anagramCharPool.SubtractChars(wordEquivalencyClass.CharPool);
+
+
+                switch (difference)
+                {
+                    case null: //negative
+                        break;
+                    case "": // solution
+                        memo.Add(anagramCharPool, wordEquivalencyClass);
+                        break;
+                    default: //inconclusive
+                        break;
+                }
+
+
+            }
+        }
+
+        public string GetDecryptedPhrase2(string hash, string targetAnagram)
         {
             var anagramCharPool = targetAnagram.Alphabetize();
             var targetAnagramRelevantWords = RemoveIrrelevantWords(_words, anagramCharPool);

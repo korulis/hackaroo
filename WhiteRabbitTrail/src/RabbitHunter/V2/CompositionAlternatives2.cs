@@ -1,10 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using RabbitHunter.V1;
 
-namespace RabbitHunter.V1
+namespace RabbitHunter.V2
 {
-    public class CompositionAlternatives : AnagramBuilder
+    public class CompositionAlternatives2 : AnagramBuilder
     {
         public List<WordEquivalencyClassComposition> TempList => _listOfCompositionAlternatives;
 
@@ -13,39 +14,11 @@ namespace RabbitHunter.V1
         private readonly List<WordEquivalencyClassComposition> _listOfCompositionAlternatives;
         public string CharPool { get; private set; }
 
-        public CompositionAlternatives(WordEquivalencyClassComposition WordEquivalencyClassComposition)
+        public CompositionAlternatives2(WordEquivalencyClassComposition WordEquivalencyClassComposition)
         {
             IsDeadend = WordEquivalencyClassComposition.IsDeadend;
             CharPool = WordEquivalencyClassComposition.CharPool;
             _listOfCompositionAlternatives = new List<WordEquivalencyClassComposition> { WordEquivalencyClassComposition };
-        }
-
-        public static CompositionAlternatives NotDeadend(WordEquivalencyClassComposition el)
-        {
-            return new CompositionAlternatives(el)
-            {
-                IsDeadend = false
-            };
-        }
-
-
-        public void AddAlternative(WordEquivalencyClassComposition alternative)
-        {
-            _listOfCompositionAlternatives.Add(alternative);
-
-            // with validation?
-            if (true)
-            {
-                if (_listOfCompositionAlternatives.Any(x => x.IsDeadend != alternative.IsDeadend))
-                {
-                    throw new ArgumentException("Composition Alternatives have do not agree on their DeadEnd status.");
-                }
-
-                if (_listOfCompositionAlternatives.Any(x => x.CharPool != alternative.CharPool))
-                {
-                    throw new ArgumentException("Composition Alternatives have do not agree on their CharPool.");
-                }
-            }
         }
 
         public List<string> BuildAnagrams()
@@ -101,6 +74,4 @@ namespace RabbitHunter.V1
             return result;
         }
     }
-
-
 }

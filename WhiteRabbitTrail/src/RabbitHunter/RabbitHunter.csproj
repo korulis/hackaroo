@@ -41,12 +41,14 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AnagramBuilder.cs" />
+    <Compile Include="V2\Memo2.cs" />
     <Compile Include="V1\CompositionAlternatives.cs" />
+    <Compile Include="V2\CompositionAlternatives2.cs" />
     <Compile Include="V1\WordEquivalencyClass.cs" />
     <Compile Include="Decrypter.cs" />
     <Compile Include="Encrypter.cs" />
     <Compile Include="Extensions.cs" />
-    <Compile Include="Memo.cs" />
+    <Compile Include="V1\Memo.cs" />
     <Compile Include="NoPhraseFound.cs" />
     <Compile Include="V1\WordEquivalencyClassComposition.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
