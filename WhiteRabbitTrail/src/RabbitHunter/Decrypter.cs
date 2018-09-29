@@ -70,11 +70,7 @@ namespace RabbitHunter
                         break;
                     default: //inconclusive
                         var sols = CompositionAlternatives2.GetCombined(RecursiveShrinking(difference, dictionary, memo, level++), wordEquivalencyClass);
-                        if (sols.IsDeadend)
-                        {
-                            memo.AddDeadEnd(anagramCharPool);
-                        }
-                        else
+                        if (!sols.IsDeadend)
                         {
                             memo.AddMultiple(anagramCharPool, sols);
                         }

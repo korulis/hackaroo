@@ -96,7 +96,7 @@ namespace RabbitHunterTests.V2
             var suffix = BlobBuilder.BuildSingletonBlob("a");
 
             var prefixes =
-                new RabbitHunter.V2.CompositionAlternatives2("de",
+                new CompositionAlternatives2("de",
                 new List<BlobComposition>()
                 {
                     new BlobComposition(new List<Blob>
