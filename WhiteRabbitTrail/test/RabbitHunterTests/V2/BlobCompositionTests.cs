@@ -9,15 +9,41 @@ namespace RabbitHunterTests.V2
     public class BlobCompositionTests
     {
 
-        [Fact]
-        public void BuildAnagramTest()
+        [Theory]
+        [MemberData(nameof(Data))]
+        public void BuildAnagramTest(List<Blob> blobs, List<string> expected)
         {
-            var blobs = new List<Blob> { BlobBuilder.BuildSingletonBlob("a") };
+            //Arrange
             var sut = new BlobComposition(blobs);
 
+            //Act
             var actual = sut.BuildAnagrams();
 
-            Assert.Equal(new List<string> { "a" }, actual);
+            //Assert
+            expected.Sort();
+            actual.ToList().Sort();
+            Assert.Equal(expected, actual);
         }
+
+        public static IEnumerable<object[]> Data =>
+            new List<object[]>
+            {
+                new object[] {
+                    new List<Blob> {BlobBuilder.BuildSingletonBlob("a")},
+                    new List<string> {"a"} },
+                new object[] {
+                    new List<Blob> {BlobBuilder.BuildSingletonBlob("b"),BlobBuilder.BuildSingletonBlob("b")},
+                    new List<string> {"b b"} },
+                new object[] {
+                    new List<Blob> {BlobBuilder.BuildBlob("ab","ba")},
+                    new List<string> {"ab","ba"} },
+                new object[] {
+                    new List<Blob> {BlobBuilder.BuildBlob("ab","ba"), BlobBuilder.BuildSingletonBlob("c")},
+                    new List<string> {"ab c","ba c"} },
+                new object[] {
+                    new List<Blob> {BlobBuilder.BuildBlob("ab","ba"), BlobBuilder.BuildBlob("cd", "dc")},
+                    new List<string> {"ab cd","ba cd", "ab dc", "ba dc" } },
+            };
+
     }
 }

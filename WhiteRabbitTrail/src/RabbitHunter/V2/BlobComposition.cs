@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 
 namespace RabbitHunter.V2
@@ -25,9 +26,33 @@ namespace RabbitHunter.V2
 
         public IEnumerable<string> BuildAnagrams()
         {
-            var phrases = new List<string> {"a"};
+            var unfoldedBlobs = new List<string> { "" };
 
-            return phrases;
+            foreach (var blob in OrderedBlobs)
+            {
+                var temp = new List<string>();
+                foreach (var unfoldedBlob in unfoldedBlobs)
+                {
+                    foreach (var word in blob.Words)
+                    {
+                        var updatedUnfoldedBlob = Add(unfoldedBlob, word);
+                        temp.Add(updatedUnfoldedBlob);
+                    }
+                }
+                unfoldedBlobs = temp;
+
+            }
+
+            return unfoldedBlobs;
+        }
+
+        private static string Add(string unfoldedBlob, string word)
+        {
+            if (unfoldedBlob == string.Empty)
+            {
+                return word;
+            }
+            return unfoldedBlob + " " + word;
         }
 
         public static BlobComposition DeadEnd = MakeDeadEnd();

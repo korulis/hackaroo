@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Xunit;
 using RabbitHunter.V2;
@@ -9,11 +10,20 @@ namespace RabbitHunterTests.V2
     public class CompositionAlternatives2Tests
     {
         [Fact]
+        public void CompositionAlternatives2_ConstructorArgumentValidation()
+        {
+
+            Assert.Throws<ArgumentException>("prefixes",() => new CompositionAlternatives2(null, BlobBuilder.BuildSingletonBlob("a")));
+
+        }
+
+
+        [Fact]
         public void MakeConcatenated_LastElementIsSuffix()
         {
             var suffix = BlobBuilder.BuildSingletonBlob("a");
 
-            var prefixes = 
+            var prefixes =
                 new RabbitHunter.V2.CompositionAlternatives2("de",
                 new List<BlobComposition>()
                 {
@@ -26,7 +36,7 @@ namespace RabbitHunterTests.V2
 
             var actual = new RabbitHunter.V2.CompositionAlternatives2(prefixes, suffix);
 
-            Assert.Equal("ade",actual.CharPool);
+            Assert.Equal("ade", actual.CharPool);
 
             Assert.Equal(actual.BlobCompositions.Count, prefixes.BlobCompositions.Count);
 

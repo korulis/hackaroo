@@ -36,6 +36,11 @@ namespace RabbitHunter.V2
         //todo test
         public CompositionAlternatives2(CompositionAlternatives2 prefixes, Blob suffix)
         {
+            if (prefixes == null)
+            {
+                throw new ArgumentException("Prefix composition alternatives can not be null", nameof(prefixes))
+            }
+
             _blobCompositions = prefixes.BlobCompositions.Select(x => new BlobComposition(x, suffix)).ToList();
             CharPool = string.Concat(prefixes.CharPool, suffix.CharPool).Alphabetize();
         }
