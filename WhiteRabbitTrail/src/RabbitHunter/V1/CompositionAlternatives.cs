@@ -38,17 +38,17 @@ namespace RabbitHunter.V1
             {
                 if (_listOfCompositionAlternatives.Any(x => x.IsDeadend != alternative.IsDeadend))
                 {
-                    throw new ArgumentException("Composition Alternatives have do not agree on their DeadEnd status.");
+                    throw new ArgumentException("Composition BlobCompositions have do not agree on their DeadEnd status.");
                 }
 
                 if (_listOfCompositionAlternatives.Any(x => x.CharPool != alternative.CharPool))
                 {
-                    throw new ArgumentException("Composition Alternatives have do not agree on their CharPool.");
+                    throw new ArgumentException("Composition BlobCompositions have do not agree on their CharPool.");
                 }
             }
         }
 
-        public List<string> BuildAnagrams()
+        public IEnumerable<string> BuildAnagrams()
         {
             throw new NotImplementedException();
         }

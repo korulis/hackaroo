@@ -7,17 +7,52 @@ namespace RabbitHunter.V2
 {
     public class CompositionAlternatives2 : AnagramBuilder
     {
-        public IReadOnlyList<BlobComposition> TempList => _listOfCompositionAlternatives;
+        //todo validate this is not null on any construction
+        public IReadOnlyList<BlobComposition> BlobCompositions => _blobCompositions;
 
-        public bool IsDeadend;
-        private readonly List<BlobComposition> _listOfCompositionAlternatives;
-        public string CharPool { get; private set; }
+        private readonly List<BlobComposition> _blobCompositions;
+        public string CharPool { get; }
+
+        public bool IsDeadend => this == DeadEnd;
 
 
-
-        public List<string> BuildAnagrams()
+        public CompositionAlternatives2(string charPool, List<BlobComposition> blobCompositions)
         {
-            throw new NotImplementedException();
+            _blobCompositions = blobCompositions;
+            CharPool = charPool;
+        }
+
+        //todo test
+        public CompositionAlternatives2(CompositionAlternatives2 alternatives1, CompositionAlternatives2 alternatives2)
+        {
+            _blobCompositions = new List<BlobComposition>();
+            _blobCompositions.AddRange(alternatives1.BlobCompositions);
+            _blobCompositions.AddRange(alternatives2.BlobCompositions);
+
+            CharPool = alternatives1.CharPool;
+        }
+
+
+        //todo test
+        public CompositionAlternatives2(CompositionAlternatives2 prefixes, Blob suffix)
+        {
+            _blobCompositions = prefixes.BlobCompositions.Select(x => new BlobComposition(x, suffix)).ToList();
+            CharPool = string.Concat(prefixes.CharPool, suffix.CharPool).Alphabetize();
+        }
+
+        private CompositionAlternatives2() { }
+
+        //todo encapsulate in CharPool
+        public static CompositionAlternatives2 DeadEnd = new CompositionAlternatives2();
+
+        public IEnumerable<string> BuildAnagrams()
+        {
+            return _blobCompositions.SelectMany(x => x.BuildAnagrams());
+        }
+
+        public void Add(BlobComposition composition)
+        {
+            _blobCompositions.Add(composition);
         }
     }
 }

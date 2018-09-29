@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Runtime.Remoting.Messaging;
 using RabbitHunter.V1;
 using RabbitHunter.V2;
@@ -23,25 +24,36 @@ namespace RabbitHunter
         {
             var anagramCharPool = targetAnagram.Alphabetize();
             var targetAnagramRelevantWords = RemoveIrrelevantWords(_words, anagramCharPool);
+            var blobDictionary = Blob.FromWordList(targetAnagramRelevantWords);
 
 
+            var alternatives = RecursiveShrinking(anagramCharPool, blobDictionary, new Memo2(), 1);
 
-            return null;
+            var anagramCandidates = alternatives.BuildAnagrams();
 
+            var answers = new List<string>();
+
+            foreach (var anagramCandidate in anagramCandidates)
+            {
+                if (_encrypter.Hash(anagramCandidate) == hash)
+                {
+                    answers.Add(anagramCandidate);
+                }
+            }
+
+            return string.Join(" & ", answers);
         }
 
-        private List<BlobComposition> RecursiveShrinking(
+        private CompositionAlternatives2 RecursiveShrinking(
             string anagramCharPool,
             IList<Blob> dictionary,
             Memo2 memo,
             int level)
         {
-            //var solutions = memo.GetSolutions();
-
-            //if (memo.IsDeadEnd())
-            //{
-
-            //}
+            if (memo.Has(anagramCharPool))
+            {
+                return memo.Get(anagramCharPool);
+            }
 
             foreach (var wordEquivalencyClass in dictionary)
             {
@@ -53,15 +65,27 @@ namespace RabbitHunter
                     case null: //negative
                         break;
                     case "": // solution
-                        memo.Add(anagramCharPool, new BlobComposition(new List<Blob> { wordEquivalencyClass }));
+                        var solution = new BlobComposition(new List<Blob> { wordEquivalencyClass });
+                        memo.Add(anagramCharPool, solution);
                         break;
                     default: //inconclusive
-                        var sols = BlobComposition.MakeConcatenated(RecursiveShrinking(difference, dictionary, memo, level++), wordEquivalencyClass);
-                        memo.AddMultiple(anagramCharPool, sols);
+                        var sols = new CompositionAlternatives2(RecursiveShrinking(difference, dictionary, memo, level++), wordEquivalencyClass);
+                        if (sols.IsDeadend)
+                        {
+                            memo.AddDeadEnd(anagramCharPool);
+                        }
+                        else
+                        {
+                            memo.AddMultiple(anagramCharPool, sols);
+                        }
                         break;
                 }
 
+            }
 
+            if (!memo.Has(anagramCharPool))
+            {
+                memo.AddDeadEnd(anagramCharPool);
             }
 
             return memo.Get(anagramCharPool);

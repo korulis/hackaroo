@@ -31,7 +31,7 @@ namespace RabbitHunter.V1
 
         }
 
-        public List<string> BuildAnagrams()
+        public IEnumerable<string> BuildAnagrams()
         {
             throw new System.NotImplementedException();
         }

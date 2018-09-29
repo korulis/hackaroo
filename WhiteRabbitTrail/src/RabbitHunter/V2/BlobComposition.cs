@@ -14,7 +14,7 @@ namespace RabbitHunter.V2
             OrderedBlobs = list;
         }
 
-        private BlobComposition(BlobComposition composition, Blob suffix)
+        public BlobComposition(BlobComposition composition, Blob suffix)
         {
             IsDeadend = false;
 
@@ -23,16 +23,20 @@ namespace RabbitHunter.V2
             OrderedBlobs = blobs;
         }
 
-        public List<string> BuildAnagrams()
+        public IEnumerable<string> BuildAnagrams()
         {
-            throw new System.NotImplementedException();
+            var phrases = new List<string> {"a"};
+
+            return phrases;
         }
 
-        public static List<BlobComposition> MakeConcatenated(List<BlobComposition> prefixes, Blob suffix)
-        {
-            var result = prefixes.Select(x => new BlobComposition(x, suffix)).ToList();
+        public static BlobComposition DeadEnd = MakeDeadEnd();
 
-            return result;
+        private static BlobComposition MakeDeadEnd()
+        {
+            var blobComposition = new BlobComposition(new List<Blob>());
+            blobComposition.IsDeadend = true;
+            return blobComposition;
         }
     }
 }

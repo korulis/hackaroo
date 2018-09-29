@@ -4,6 +4,6 @@ namespace RabbitHunter
 {
     public interface AnagramBuilder
     {
-        List<string> BuildAnagrams();
+        IEnumerable<string> BuildAnagrams();
     }
 }
