@@ -18,6 +18,16 @@ namespace RabbitHunter.V2
 
         public CompositionAlternatives2(string charPool, List<BlobComposition> blobCompositions)
         {
+            if (string.IsNullOrEmpty(charPool))
+            {
+                throw new ArgumentException("Can not be null or empty", nameof(charPool));
+            }
+            if (blobCompositions == null)
+            {
+                throw new ArgumentException("Can not be null", nameof(blobCompositions));
+            }
+
+
             _blobCompositions = blobCompositions;
             CharPool = charPool;
         }
@@ -34,15 +44,26 @@ namespace RabbitHunter.V2
 
 
         //todo test
-        public CompositionAlternatives2(CompositionAlternatives2 prefixes, Blob suffix)
+        public static CompositionAlternatives2 GetCombined(CompositionAlternatives2 prefixes, Blob suffix)
         {
             if (prefixes == null)
             {
-                throw new ArgumentException("Prefix composition alternatives can not be null", nameof(prefixes))
+                throw new ArgumentException("Prefix composition alternatives can not be null", nameof(prefixes));
             }
 
-            _blobCompositions = prefixes.BlobCompositions.Select(x => new BlobComposition(x, suffix)).ToList();
-            CharPool = string.Concat(prefixes.CharPool, suffix.CharPool).Alphabetize();
+            if (suffix == null)
+            {
+                throw new ArgumentException("Suffix blob can not be null", nameof(suffix));
+            }
+
+            if (prefixes.IsDeadend)
+            {
+                return DeadEnd;
+            }
+
+            var blobCompositions = prefixes.BlobCompositions.Select(x => new BlobComposition(x, suffix)).ToList();
+            var charPool = string.Concat(prefixes.CharPool, suffix.CharPool).Alphabetize();
+            return new CompositionAlternatives2(charPool, blobCompositions);
         }
 
         private CompositionAlternatives2() { }

@@ -8,7 +8,7 @@ namespace RabbitHunterTests.V2
 {
     public class BlobBuilder
     {
-        public static Blob BuildBlob(params string[] words)
+        public static Blob Build(params string[] words)
         {
             if (words.Length == 0)
             {

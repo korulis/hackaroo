@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -6,18 +7,23 @@ namespace RabbitHunter.V2
 {
     public class BlobComposition : AnagramBuilder
     {
-        public bool IsDeadend;
         public IReadOnlyCollection<Blob> OrderedBlobs { get; }
 
         public BlobComposition(List<Blob> list)
         {
-            IsDeadend = false;
             OrderedBlobs = list;
         }
 
         public BlobComposition(BlobComposition composition, Blob suffix)
         {
-            IsDeadend = false;
+            if (suffix == null)
+            {
+                throw new ArgumentException("Can not be null", nameof(suffix));
+            }
+            if (composition == null)
+            {
+                throw new ArgumentException("Can not be null", nameof(composition));
+            }
 
             var blobs = composition.OrderedBlobs.ToList();
             blobs.Add(suffix);
@@ -60,7 +66,6 @@ namespace RabbitHunter.V2
         private static BlobComposition MakeDeadEnd()
         {
             var blobComposition = new BlobComposition(new List<Blob>());
-            blobComposition.IsDeadend = true;
             return blobComposition;
         }
     }

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using RabbitHunter.V1;
@@ -8,12 +9,24 @@ namespace RabbitHunter.V2
     {
         public string CharPool { get; }
 
-        public IReadOnlyCollection<string> Words { get; }
+        private readonly List<string> _words;
 
-        public Blob(string charPool, IReadOnlyCollection<string> words)
+        public IReadOnlyCollection<string> Words => _words;
+
+        public Blob(string charPool, List<string> words)
         {
+            // not checking words count and whether they are equivalent due to optimisation reasons.
+            if (string.IsNullOrEmpty(charPool))
+            {
+                throw new ArgumentException("Char pool can not be null or empty", nameof(charPool));
+            }
+            if (words == null)
+            {
+                throw new ArgumentException("Words can not be null", nameof(words));
+            }
+
             CharPool = charPool;
-            Words = words;
+            _words = words;
         }
 
         private static IDictionary<string, List<string>> GetDictionary(List<string> words)
