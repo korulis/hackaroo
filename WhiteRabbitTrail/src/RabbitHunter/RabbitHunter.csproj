@@ -41,6 +41,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AnagramBuilder.cs" />
+    <Compile Include="CharPoolComparer.cs" />
     <Compile Include="V2\BlobComposition.cs" />
     <Compile Include="V2\Blob.cs" />
     <Compile Include="V2\Memo2.cs" />

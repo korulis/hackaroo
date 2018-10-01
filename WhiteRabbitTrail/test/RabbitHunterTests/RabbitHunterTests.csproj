@@ -69,6 +69,7 @@
     <Compile Include="V2\BlobBuilder.cs" />
     <Compile Include="V2\BlobTests.cs" />
     <Compile Include="V2\BlobCompositionTests.cs" />
+    <Compile Include="V2\CharPoolComparerTests.cs" />
     <Compile Include="V2\CompositionBuilder.cs" />
     <Compile Include="V2\MemoTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

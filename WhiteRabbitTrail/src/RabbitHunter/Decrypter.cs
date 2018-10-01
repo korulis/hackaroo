@@ -20,10 +20,12 @@ namespace RabbitHunter
             _encrypter = encrypter;
         }
 
+
         public string GetDecryptedPhrase(string hash, string targetAnagram)
         {
             var anagramCharPool = targetAnagram.Alphabetize();
             var targetAnagramRelevantWords = RemoveIrrelevantWords(_words, anagramCharPool);
+            targetAnagramRelevantWords.Sort(new CharPoolComparer());
             var blobDictionary = Blob.FromWordList(targetAnagramRelevantWords);
 
 
