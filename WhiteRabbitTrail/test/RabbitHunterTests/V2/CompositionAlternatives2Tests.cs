@@ -27,13 +27,13 @@ namespace RabbitHunterTests.V2
             new object[]
             {
                 AlternativesBuilder.Build(CompositionBuilder.Build(BlobBuilder.Build("ac"))),
-                BlobBuilder.BuildSingletonBlob("b"),
+                BlobBuilder.Build("b"),
                 new[] {"ac,b"}
             },
             new object[]
             {
                 AlternativesBuilder.Build(CompositionBuilder.Build(BlobBuilder.Build("a"),BlobBuilder.Build("c"))),
-                BlobBuilder.BuildSingletonBlob("z"),
+                BlobBuilder.Build("z"),
                 new[] {"a,c,z"}
             },
 
@@ -44,7 +44,7 @@ namespace RabbitHunterTests.V2
                     CompositionBuilder.Build(BlobBuilder.Build("ac")),
                     CompositionBuilder.Build(BlobBuilder.Build("a"),BlobBuilder.Build("c"))
                     ),
-                BlobBuilder.BuildSingletonBlob("z"),
+                BlobBuilder.Build("z"),
                 new[] {"rt,z","ac,z","a,c,z"}
             },
         };
@@ -75,14 +75,14 @@ namespace RabbitHunterTests.V2
         [Fact]
         public void CompositionAlternatives2_PrefixConstructor_PrefixArgumentValidation()
         {
-            Assert.Throws<ArgumentException>("prefixes", () => CompositionAlternatives2.GetCombined(null, BlobBuilder.BuildSingletonBlob("a")));
+            Assert.Throws<ArgumentException>("prefixes", () => CompositionAlternatives2.GetCombined(null, BlobBuilder.Build("a")));
         }
 
         [Fact]
         public void CompositionAlternatives2_PrefixConstructor_SuffixArgumentValidation()
         {
             var prefixes = new CompositionAlternatives2("a",
-                new List<BlobComposition> { new BlobComposition(new List<Blob> { BlobBuilder.BuildSingletonBlob("a") }) });
+                new List<BlobComposition> { new BlobComposition(new List<Blob> { BlobBuilder.Build("a") }) });
 
             Blob badSuffix = null;
 
@@ -93,7 +93,7 @@ namespace RabbitHunterTests.V2
         [Fact]
         public void MakeConcatenated_LastElementIsSuffix()
         {
-            var suffix = BlobBuilder.BuildSingletonBlob("a");
+            var suffix = BlobBuilder.Build("a");
 
             var prefixes =
                 new CompositionAlternatives2("de",
@@ -101,7 +101,7 @@ namespace RabbitHunterTests.V2
                 {
                     new BlobComposition(new List<Blob>
                     {
-                        BlobBuilder.BuildSingletonBlob("d"), BlobBuilder.BuildSingletonBlob("e")
+                        BlobBuilder.Build("d"), BlobBuilder.Build("e")
                     }),
                     new BlobComposition(new List<Blob>{new Blob("de", new List<string> { "de", "ed"})}),
                 });

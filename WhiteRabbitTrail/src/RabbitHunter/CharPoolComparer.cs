@@ -6,6 +6,12 @@ namespace RabbitHunter
     {
         public int Compare(string x, string y)
         {
+            return CompareCharPools(x, y);
+        }
+
+
+        public static int CompareCharPools(string x, string y)
+        {
             if (!string.IsNullOrEmpty(x) && !string.IsNullOrEmpty(y) && x.Length != y.Length)
             {
                 if (x.Length > y.Length)

@@ -1,12 +1,13 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using RabbitHunter.V1;
 
 namespace RabbitHunter.V2
 {
     public class Blob
     {
+        public List<Blob> BigBrothers { get; }
+
         public string CharPool { get; }
 
         private readonly List<string> _words;
@@ -15,6 +16,7 @@ namespace RabbitHunter.V2
 
         public Blob(string charPool, List<string> words)
         {
+            BigBrothers = new List<Blob>();
             // not checking words count and whether they are equivalent due to optimisation reasons.
             if (string.IsNullOrEmpty(charPool))
             {
@@ -45,6 +47,36 @@ namespace RabbitHunter.V2
         public static IList<Blob> FromWordList(List<string> targetAnagramRelevantWords)
         {
             return GetDictionary(targetAnagramRelevantWords).Select(x => new Blob(x.Key, x.Value)).ToList();
+        }
+
+        public static void Graphy(List<Blob> blobs)
+        {
+            ValidateForGraphy(blobs);
+
+            foreach (var littleBrother in blobs)
+            {
+                foreach (var brother in blobs)
+                {
+                    var diff = brother.CharPool.SubtractChars(littleBrother.CharPool);
+                    if (!string.IsNullOrEmpty(diff))
+                    {
+                        littleBrother.BigBrothers.Add(brother);
+                    }
+                }
+            }
+        }
+
+        private static void ValidateForGraphy(List<Blob> blobs)
+        {
+            blobs.Sort((blob1, blob2) => CharPoolComparer.CompareCharPools(blob1.CharPool, blob2.CharPool));
+
+            for (int i = 1; i < blobs.Count; i++)
+            {
+                if (blobs[i - 1].CharPool.SubtractChars(blobs[i].CharPool) == string.Empty)
+                {
+                    throw new ArgumentException("All blobs must have different char pools.", nameof(blobs));
+                }
+            }
         }
     }
 }

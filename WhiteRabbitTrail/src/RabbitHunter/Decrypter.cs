@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.InteropServices;
-using System.Runtime.Remoting.Messaging;
 using RabbitHunter.V1;
 using RabbitHunter.V2;
 using RabbitHunterTests;
@@ -16,7 +14,7 @@ namespace RabbitHunter
 
         public Decrypter(IEnumerable<string> words, Encrypter encrypter)
         {
-            _words = words;
+            _words = words.Distinct().ToList();
             _encrypter = encrypter;
         }
 
@@ -26,7 +24,9 @@ namespace RabbitHunter
             var anagramCharPool = targetAnagram.Alphabetize();
             var targetAnagramRelevantWords = RemoveIrrelevantWords(_words, anagramCharPool);
             targetAnagramRelevantWords.Sort(new CharPoolComparer());
-            var blobDictionary = Blob.FromWordList(targetAnagramRelevantWords);
+            var blobDictionary = Blob.FromWordList(targetAnagramRelevantWords).ToList();
+            Blob.Graphy(blobDictionary);
+            var actualBlobDictionary = blobDictionary.ToDictionary(x => x.CharPool, x => x);
 
 
             var alternatives = RecursiveShrinking(anagramCharPool, blobDictionary, new Memo2(), 1);

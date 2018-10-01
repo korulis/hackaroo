@@ -29,16 +29,16 @@ namespace RabbitHunterTests.V2
             new List<object[]>
             {
                 new object[] {
-                    new List<Blob> {BlobBuilder.BuildSingletonBlob("a")},
+                    new List<Blob> {BlobBuilder.Build("a")},
                     new List<string> {"a"} },
                 new object[] {
-                    new List<Blob> {BlobBuilder.BuildSingletonBlob("b"),BlobBuilder.BuildSingletonBlob("b")},
+                    new List<Blob> {BlobBuilder.Build("b"),BlobBuilder.Build("b")},
                     new List<string> {"b b"} },
                 new object[] {
                     new List<Blob> {BlobBuilder.Build("ab","ba")},
                     new List<string> {"ab","ba"} },
                 new object[] {
-                    new List<Blob> {BlobBuilder.Build("ab","ba"), BlobBuilder.BuildSingletonBlob("c")},
+                    new List<Blob> {BlobBuilder.Build("ab","ba"), BlobBuilder.Build("c")},
                     new List<string> {"ab c","ba c"} },
                 new object[] {
                     new List<Blob> {BlobBuilder.Build("ab","ba"), BlobBuilder.Build("cd", "dc")},

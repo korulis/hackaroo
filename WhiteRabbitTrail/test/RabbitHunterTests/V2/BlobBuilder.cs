@@ -26,9 +26,5 @@ namespace RabbitHunterTests.V2
             return new Blob(words[0].Alphabetize(), words.ToList());
         }
 
-        public static Blob BuildSingletonBlob(string charPool)
-        {
-            return new Blob(charPool, new List<string> { charPool });
-        }
     }
 }

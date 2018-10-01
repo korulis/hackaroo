@@ -25,5 +25,37 @@ namespace RabbitHunterTests.V2
             Assert.Throws<ArgumentException>("words", () => new Blob("ab", null));
         }
 
+        [Fact]
+        public void GraphyBlobs_Exceptions()
+        {
+            var blobs = new List<Blob> { BlobBuilder.Build("a"), BlobBuilder.Build("a") };
+
+            Assert.Throws<ArgumentException>("blobs",() => Blob.Graphy(blobs));
+        }
+
+        [Fact]
+        public void GraphyBlobs_Disjoint()
+        {
+            var blobs = new List<Blob> { BlobBuilder.Build("a"), BlobBuilder.Build("b") };
+
+            Blob.Graphy(blobs);
+
+            Assert.Empty(blobs[0].BigBrothers);
+            Assert.Empty(blobs[1].BigBrothers);
+        }
+
+        [Fact]
+        public void GraphyBlobs()
+        {
+            var blobs = new List<Blob> { BlobBuilder.Build("aa"), BlobBuilder.Build("a") };
+
+            Blob.Graphy(blobs);
+
+            Assert.Empty(blobs[0].BigBrothers);
+            Assert.Single(blobs[1].BigBrothers);
+            Assert.Equal(blobs[0], blobs[1].BigBrothers.Single());
+        }
+
+
     }
 }
