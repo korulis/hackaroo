@@ -87,6 +87,8 @@ namespace RabbitHunter.V2
 
         public void AddDeadEnd(string anagramCharPool)
         {
+            for 
+
             if (!Has(anagramCharPool))
             {
                 _dict.Add(anagramCharPool, CompositionAlternatives2.DeadEnd);

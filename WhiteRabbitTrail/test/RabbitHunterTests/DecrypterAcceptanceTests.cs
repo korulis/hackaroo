@@ -30,7 +30,7 @@ namespace RabbitHunterTests
         }
 
 
-        [Theory/*(Skip = "not ready")*/]
+        [Theory(Skip = "not ready")]
         [InlineData("e4820b45d2277f3844eac66c903e84be", "printout stout yawls")]
         [InlineData("23170acc097c24edb98fc5488ab033fe", "ty outlaws printouts")]
         public void Decrypt_ReturnsCorrectPhrases_ForRabbitHunt(string hash, string expectedPhrase)

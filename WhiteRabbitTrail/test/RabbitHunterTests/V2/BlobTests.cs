@@ -30,7 +30,7 @@ namespace RabbitHunterTests.V2
         {
             var blobs = new List<Blob> { BlobBuilder.Build("a"), BlobBuilder.Build("a") };
 
-            Assert.Throws<ArgumentException>("blobs",() => Blob.Graphy(blobs));
+            Assert.Throws<ArgumentException>("blobs", () => Blob.Graphy(blobs));
         }
 
         [Fact]
@@ -51,9 +51,10 @@ namespace RabbitHunterTests.V2
 
             Blob.Graphy(blobs);
 
-            Assert.Empty(blobs[0].BigBrothers);
-            Assert.Single(blobs[1].BigBrothers);
-            Assert.Equal(blobs[0], blobs[1].BigBrothers.Single());
+            Assert.Equal("a", blobs[0].CharPool);
+            Assert.Empty(blobs[1].BigBrothers);
+            Assert.Single(blobs[0].BigBrothers);
+            Assert.Equal(blobs[1], blobs[0].BigBrothers.Single());
         }
 
 

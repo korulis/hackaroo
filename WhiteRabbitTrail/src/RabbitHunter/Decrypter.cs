@@ -57,15 +57,25 @@ namespace RabbitHunter
                 return memo.Get(anagramCharPool);
             }
 
+            var localBlackList = new List<Blob>();
+
             foreach (var wordEquivalencyClass in dictionary)
             {
+                if (localBlackList.Contains(wordEquivalencyClass))
+                {
+                    //this is a "big bother of an instant looser so it is a bigger looser"
+                    continue;
+                }
+
                 var difference = anagramCharPool.SubtractChars(wordEquivalencyClass.CharPool);
 
 
                 switch (difference)
                 {
                     case null: //negative
-                        break;
+                        // this is an instant looser
+                        localBlackList.AddRange(wordEquivalencyClass.BigBrothers);
+                        continue;
                     case "": // solution
                         var solution = new BlobComposition(new List<Blob> { wordEquivalencyClass });
                         memo.Add(anagramCharPool, solution);
