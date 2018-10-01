@@ -21,6 +21,7 @@ namespace RabbitHunter
 
         public string GetDecryptedPhrase(string hash, string targetAnagram)
         {
+            var answers = new List<string>();
             var anagramCharPool = targetAnagram.Alphabetize();
             var targetAnagramRelevantWords = RemoveIrrelevantWords(_words, anagramCharPool);
             targetAnagramRelevantWords.Sort(new CharPoolComparer());
@@ -28,18 +29,19 @@ namespace RabbitHunter
             Blob.Graphy(blobDictionary);
             var actualBlobDictionary = blobDictionary.ToDictionary(x => x.CharPool, x => x);
 
-
-            var alternatives = RecursiveShrinking(anagramCharPool, blobDictionary, new Memo2(), 1);
-
-            var anagramCandidates = alternatives.BuildAnagrams();
-
-            var answers = new List<string>();
-
-            foreach (var anagramCandidate in anagramCandidates)
+            for (int i = 0; i < anagramCharPool.Length; i++)
             {
-                if (_encrypter.Hash(anagramCandidate) == hash)
+                var alternatives = RecursiveShrinking(anagramCharPool, blobDictionary, new Memo2(), 0, i);
+
+                var anagramCandidates = alternatives.BuildAnagrams();
+
+                foreach (var anagramCandidate in anagramCandidates)
                 {
-                    answers.Add(anagramCandidate);
+                    if (_encrypter.Hash(anagramCandidate) == hash)
+                    {
+                        return anagramCandidate;
+                        //answers.Add(anagramCandidate);
+                    }
                 }
             }
 
@@ -50,11 +52,18 @@ namespace RabbitHunter
             string anagramCharPool,
             IList<Blob> dictionary,
             Memo2 memo,
-            int level)
+            int level,
+            int maxLevel)
         {
+
             if (memo.Has(anagramCharPool))
             {
                 return memo.Get(anagramCharPool);
+            }
+
+            if (level > maxLevel)
+            {
+                return CompositionAlternatives2.DeadEnd;
             }
 
             var localBlackList = new List<Blob>();
